@@ -1,0 +1,4 @@
+rootProject.name = 'mymessanger'
+
+include 'messenger'
+include 'user-manager'

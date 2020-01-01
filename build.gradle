@@ -1,0 +1,12 @@
+task dcUp(type: Exec) {
+  group "docker-compose"
+  executable "docker-compose"
+  args "up", "-d"
+}
+
+task dcDown(type: Exec) {
+  group "docker-compose"
+  executable "docker-compose"
+  args "down", "-v"
+}
+

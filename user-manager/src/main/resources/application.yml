@@ -1,0 +1,29 @@
+# ===============================
+# DATABASE CONNECTION
+# ===============================
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://db:5432/mymessenger
+    username: root
+    password: pass
+
+# ===============================
+# JPA / HIBERNATE
+# ===============================
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
+# Fix Postgres JPA Error:
+# Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented.
+        temp:
+          use_jdbc_metadata_defaults: false
+

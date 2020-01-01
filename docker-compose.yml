@@ -1,0 +1,105 @@
+version: "3.6"
+
+services:
+
+  web:
+    image: nginx:alpine
+    container_name: mymess-nginx
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./logs/nginx:/var/log/nginx
+    ports:
+      - 80:80
+    links:
+      - api
+      - frontend
+      - adminer
+      - user
+    networks:
+      - mymess-network
+
+  api:
+    image: mymessenger-api:1.0
+    container_name: mymess-api
+    networks:
+      - mymess-network
+
+  user:
+    image: mymess-user-manager:1.0
+    container_name: mymess-user-manager
+    networks:
+      - mymess-network
+    ports:
+      - 8081:8080
+
+  redis:
+    image: redis:4.0.5-alpine
+    container_name: mymess-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    hostname: redis
+    networks:
+      - mymess-network
+    volumes:
+      - mymess-redis-data:/data
+
+  db:
+    image: postgres:12
+    container_name: mymess-postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: mymessenger
+    ports:
+      - 5432:5432
+    volumes:
+      - mymess-db-data:/var/lib/postgresql/data
+      - ./logs/postgres:/var/log/postgresql
+    networks:
+      - mymess-network
+
+  adminer:
+    image: adminer
+    container_name: mymess-adminer
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - mymess-network
+
+  frontend:
+    build: docker/frontend
+    container_name: mymess-frontend
+    command: bash -c "npm run dev"
+    user: 1000:1000
+    volumes:
+      - ./frontend:/app
+    networks:
+      - mymess-network
+
+#  cassandra:
+#    image: cassandra:3.11
+#    container_name: mymess-cassandra
+#    volumes:
+#      - mymess-cassandra-data:/var/lib/cassandra
+#    environment:
+#      - CASSANDRA_SEEDS=cassandra
+#      - CASSANDRA_PASSWORD_SEEDER=yes
+#      - CASSANDRA_PASSWORD=cassandra
+#    networks:
+#      - mymess-network
+
+  rabbitmq:
+    image: rabbitmq:3.8.2
+    container_name: mymess-queue
+    networks:
+      - mymess-network
+
+networks:
+  mymess-network:
+
+volumes:
+  mymess-db-data:
+  mymess-redis-data:
+  mymess-cassandra-data:
+    driver: local
+  mymess-kafka-data:

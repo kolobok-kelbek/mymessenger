@@ -1,0 +1,56 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.2.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'java'
+}
+
+group = 'com.myprod.mymessanger'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	testImplementation 'org.springframework.amqp:spring-rabbit-test'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+def Properties localBootRunProperties() {
+  Properties p = new Properties();
+  p.load(new FileInputStream(
+    file(project.projectDir).absolutePath + "/src/main/resources/application.yml"))
+  return p;
+}
+
+build {
+  doFirst {
+    bootRun.systemProperties = localBootRunProperties()
+  }
+}
+
+task dockerBuild(type: Exec) {
+  group "docker"
+  executable "docker"
+  args "build", "-f", "docker/Dockerfile", "-t", "mymess-user-manager:1.0", "."
+}

@@ -1,0 +1,76 @@
+plugins {
+  id 'java'
+  id 'application'
+  id 'com.github.johnrengelman.shadow' version '5.0.0'
+}
+
+group = 'com.myprod.mymessanger'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+  mavenCentral()
+}
+
+ext {
+  vertxVersion = '3.8.4'
+  junitJupiterEngineVersion = '5.4.0'
+}
+
+application {
+  mainClassName = 'io.vertx.core.Launcher'
+}
+
+def mainVerticleName = 'com.myprod.mymessanger.application.MainVerticle'
+def watchForChange = 'src/**/*'
+def doOnChange = './gradlew classes'
+
+dependencies {
+  compile "io.vertx:vertx-pg-client:$vertxVersion"
+  compile "io.vertx:vertx-web-client:$vertxVersion"
+  compile "io.vertx:vertx-web-graphql:$vertxVersion"
+  compile "io.vertx:vertx-rx-java2:$vertxVersion"
+  compile "io.vertx:vertx-auth-jwt:$vertxVersion"
+  compile "io.vertx:vertx-junit5:$vertxVersion"
+  compile "io.vertx:vertx-web:$vertxVersion"
+  compile "io.vertx:vertx-kafka-client:$vertxVersion"
+  compile "io.vertx:vertx-tcp-eventbus-bridge:$vertxVersion"
+  compile "io.vertx:vertx-cassandra-client:$vertxVersion"
+  compile "io.vertx:vertx-redis-client:$vertxVersion"
+
+  testImplementation "io.vertx:vertx-junit5:$vertxVersion"
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion"
+
+  // Lombok
+  compileOnly 'org.projectlombok:lombok:1.18.10'
+  annotationProcessor 'org.projectlombok:lombok:1.18.10'
+}
+
+shadowJar {
+  classifier = 'fat'
+  manifest {
+    attributes 'Main-Verticle': mainVerticleName
+  }
+  mergeServiceFiles {
+    include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+  }
+}
+
+test {
+  useJUnitPlatform()
+  testLogging {
+    events 'PASSED', 'FAILED', 'SKIPPED'
+  }
+}
+
+run {
+  args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName", "--on-redeploy=$doOnChange"]
+}
+
+task dockerBuild(type: Exec) {
+  group "docker"
+  executable "docker"
+  args "build", "-f", "docker/Dockerfile", "-t", "mymessenger-api:1.0", "."
+}
+
