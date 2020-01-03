@@ -53,4 +53,5 @@ task dockerBuild(type: Exec) {
   group "docker"
   executable "docker"
   args "build", "-f", "docker/Dockerfile", "-t", "mymess-user-manager:1.0", "."
+  dependsOn 'build'
 }

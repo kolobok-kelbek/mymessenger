@@ -72,5 +72,6 @@ task dockerBuild(type: Exec) {
   group "docker"
   executable "docker"
   args "build", "-f", "docker/Dockerfile", "-t", "mymessenger-api:1.0", "."
+  dependsOn 'build'
 }
 

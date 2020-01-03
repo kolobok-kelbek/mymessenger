@@ -1,4 +1,4 @@
-rootProject.name = 'mymessanger'
+rootProject.name = 'mymessenger'
 
 include 'messenger'
 include 'user-manager'
