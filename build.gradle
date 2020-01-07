@@ -2,6 +2,7 @@ task dcUp(type: Exec) {
   group "docker-compose"
   executable "docker-compose"
   args "up", "-d"
+  dependsOn 'installFrontendDependences'
 }
 
 task dcDown(type: Exec) {
@@ -35,4 +36,10 @@ task rebuildMessenger {
 task rebuildUserManager() {
   group "application"
   dependsOn 'dcRestartUserManager'
+}
+
+task installFrontendDependences(type: Exec) {
+  group "frontend"
+  executable "docker-compose"
+  args "run", "frontend", "bash", "-c", "npm i"
 }
