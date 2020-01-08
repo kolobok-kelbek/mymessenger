@@ -21,7 +21,7 @@ task dcRestartApi(type: Exec) {
 task dcRestartUserManager(type: Exec) {
   group "docker-compose"
   executable "docker-compose"
-  args "up", "--detach", "--build", "api"
+  args "up", "--detach", "--build", "user"
   dependsOn 'user-manager:dockerBuild'
 }
 
