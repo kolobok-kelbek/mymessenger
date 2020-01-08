@@ -3,7 +3,12 @@ package com.myprod.mymessanger.user.manager.service;
 import com.myprod.mymessanger.user.manager.entity.User;
 import com.myprod.mymessanger.user.manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.UUID;
 
@@ -14,11 +19,11 @@ public class UserService {
 
     @Autowired
     public UserService(UserRepository userRepository) {
-      this.userRepository = userRepository;
+        this.userRepository = userRepository;
     }
 
     public User findUser(UUID uuid) {
-        return userRepository.findById(uuid).get();
+        return userRepository.findById(uuid).orElse(null);
     }
 
     public void saveUser(User user) {
@@ -31,5 +36,23 @@ public class UserService {
 
     public void updateUser(User user) {
         userRepository.save(user);
+    }
+
+    public Page<User> findLimitUsers(int limit, int offset) {
+        if (limit <= 0) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid value of limit");
+        }
+
+        if (offset < 0) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid value of offset");
+        }
+
+        Pageable pageable = PageRequest.of(offset, limit);
+
+        return userRepository.findAll(pageable);
+    }
+
+    public long getCount() {
+        return userRepository.count();
     }
 }
