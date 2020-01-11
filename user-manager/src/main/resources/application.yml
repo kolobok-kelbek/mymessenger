@@ -9,9 +9,9 @@ spring:
     username: root
     password: pass
 
-# ===============================
-# JPA / HIBERNATE
-# ===============================
+  # ===============================
+  # JPA / HIBERNATE
+  # ===============================
 
   jpa:
     show-sql: true
@@ -22,8 +22,13 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 
-# Fix Postgres JPA Error:
-# Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented.
+        # Fix Postgres JPA Error:
+        # Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented.
         temp:
           use_jdbc_metadata_defaults: false
 
+  # ===============================
+  # SECURITY
+  # ===============================
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
