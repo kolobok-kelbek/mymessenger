@@ -1,11 +1,9 @@
 package com.myprod.mymessanger.user.manager.entity;
 
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,24 +15,36 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 public final class User {
 
-  @Id
-  @GeneratedValue
-  private final UUID uuid;
+    @Id
+    @GeneratedValue
+    private UUID uuid;
 
-  @Column(name = "name")
-  private final String name;
+    private String name;
 
-  @Column(name = "surname")
-  private final String surname;
+    private String surname;
 
-  @Column(name = "last_name")
-  private final String lastName;
+    private String lastName;
 
-  @Column(name = "username")
-  private final String username;
+    private String nickname;
 
-  @OneToMany(mappedBy = "user")
-  private Set<PhoneNumber> phoneNumbers;
+    private String email;
 
+    private String password;
+
+    private boolean enabled;
+
+    private boolean tokenExpired;
+
+    @OneToMany(mappedBy = "user")
+    private Set<PhoneNumber> phoneNumbers;
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "uuid"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id", referencedColumnName = "id"))
+    private Collection<Role> roles;
 }
 

@@ -13,7 +13,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/user", produces = MediaType.APPLICATION_JSON_VALUE)
 final public class UserController {
 
     @Autowired
