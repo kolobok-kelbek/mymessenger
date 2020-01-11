@@ -14,6 +14,7 @@ After changed files, you need execute commands:
 1. `./gradlew rebuildMessenger`   // for messenger
 2. `./gradlew rebuildUserManager` // for user manager
 
+
 # For Windows
 
 ### Starting development
@@ -30,6 +31,7 @@ After changed files, you need execute commands:
 1. `gradlew.bat rebuildMessenger`   // for messenger
 2. `gradlew.bat rebuildUserManager` // for user manager
 
+
 # Intellij IDEA
 
 You can install plugins for more comfortable development:
@@ -37,3 +39,14 @@ You can install plugins for more comfortable development:
 1. [Lombok plugin](https://plugins.jetbrains.com/plugin/6317-lombok/)
 2. [GraphQL plugin](https://plugins.jetbrains.com/plugin/8097-js-graphql/)
 3. [Ideolog plugin](https://plugins.jetbrains.com/plugin/9746-ideolog/)
+
+
+# Admin panels
+
+#### For postgresql - [adminer](http://localhost/adminer)<br>
+server - `db`<br>
+username - `root`<br>
+password - `pass`<br>
+database - `mymessenger`<br>
+
+#### For redis - [redis commander](http://localhost:8082/)

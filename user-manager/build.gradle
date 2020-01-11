@@ -1,7 +1,7 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.2.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'java'
 }
 
 group = 'com.myprod.mymessanger'
@@ -9,51 +9,68 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-amqp'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-	testImplementation 'org.springframework.amqp:spring-rabbit-test'
-  testImplementation 'org.springframework.security:spring-security-test'
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // PostgreSQL driver
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // JWT
+    compile 'io.jsonwebtoken:jjwt-api:0.10.7'
+    runtime 'io.jsonwebtoken:jjwt-impl:0.10.7',
+            // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
+            //'org.bouncycastle:bcprov-jdk15on:1.60',
+            'io.jsonwebtoken:jjwt-jackson:0.10.7'
+
+    // Tests
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.springframework.amqp:spring-rabbit-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // Faker
+    testImplementation 'com.github.javafaker:javafaker:1.0.2'
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 def Properties localBootRunProperties() {
-  Properties p = new Properties();
-  p.load(new FileInputStream(
-    file(project.projectDir).absolutePath + "/src/main/resources/application.yml"))
-  return p;
+    Properties p = new Properties();
+    p.load(new FileInputStream(
+            file(project.projectDir).absolutePath + "/src/main/resources/application.yml"))
+    return p;
 }
 
 build {
-  doFirst {
-    bootRun.systemProperties = localBootRunProperties()
-  }
+    doFirst {
+        bootRun.systemProperties = localBootRunProperties() as Map<String, ?>
+    }
 }
 
 task dockerBuild(type: Exec) {
-  group "docker"
-  executable "docker"
-  args "build", "-f", "docker/Dockerfile", "-t", "mymess-user-manager:1.0", "."
-  dependsOn 'build'
+    group "docker"
+    executable "docker"
+    args "build", "-f", "docker/Dockerfile", "-t", "mymess-user-manager:1.0", "."
+    dependsOn 'build'
 }
