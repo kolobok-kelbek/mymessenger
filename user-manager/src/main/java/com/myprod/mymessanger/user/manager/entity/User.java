@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 import javax.persistence.*;
-import java.util.Set;
 import java.util.UUID;
 
 @Value
@@ -32,6 +31,9 @@ public final class User {
 
     @Column(name = "username")
     private final String username;
+
+    @Column(name = "e_mail")
+    private final String emails;
 
 //    @OneToMany
 //    @JoinColumn(name = "user_id")
