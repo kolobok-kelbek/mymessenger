@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+
 
 import java.util.UUID;
 
@@ -40,11 +39,11 @@ public class UserService {
 
     public Page<User> findLimitUsers(int limit, int offset) {
         if (limit <= 0) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid value of limit");
+            throw new IllegalArgumentException("Invalid value of limit");
         }
 
         if (offset < 0) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid value of offset");
+            throw new IllegalArgumentException("Invalid value of offset");
         }
 
         Pageable pageable = PageRequest.of(offset, limit);

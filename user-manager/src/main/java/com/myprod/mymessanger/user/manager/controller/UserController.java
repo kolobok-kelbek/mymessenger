@@ -5,14 +5,18 @@ import com.myprod.mymessanger.user.manager.entity.User;
 import com.myprod.mymessanger.user.manager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.UUID;
+
 
 @RestController
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 final public class UserController {
+
     @Autowired
     private UserService userService;
 
@@ -36,14 +40,23 @@ final public class UserController {
     }
 
     @GetMapping
-    public BatchDTO<User> getLimitUsers(@RequestParam int limit, @RequestParam int offset) {
-        try {
-            userService.findLimitUsers(limit, offset);
-        } catch (IllegalArgumentException e) {
-            System.out.println("\"Limit\" cannot be less than or equal to zero and \"offset\" cannot be less than zero");
+    public BatchDTO<User> getLimitUsers(@RequestParam Integer limit, @RequestParam Integer offset) {
+
+        Page<User> page;
+
+        if (null == limit) {
+            limit = 10;
         }
 
-        Page<User> page = userService.findLimitUsers(limit, offset);
+        if (null == offset) {
+            offset = 0;
+        }
+
+        try {
+            page = userService.findLimitUsers(limit, offset);
+        } catch (Exception e) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
 
         return BatchDTO.<User>builder()
                 .limit(limit)
