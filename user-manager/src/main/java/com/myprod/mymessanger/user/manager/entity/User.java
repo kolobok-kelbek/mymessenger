@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 @Value
@@ -16,23 +17,24 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 public final class User {
 
-    @Id
-    @GeneratedValue
-    private final UUID uuid;
+  @Id
+  @GeneratedValue
+  private final UUID uuid;
 
-    @Column(name = "name")
-    private final String name;
+  @Column(name = "name")
+  private final String name;
 
-    @Column(name = "surname")
-    private final String surname;
+  @Column(name = "surname")
+  private final String surname;
 
-    @Column(name = "last_name")
-    private final String lastName;
+  @Column(name = "last_name")
+  private final String lastName;
 
-    @Column(name = "username")
-    private final String username;
+  @Column(name = "username")
+  private final String username;
 
-//    @OneToMany
-//    @JoinColumn(name = "user_id")
-//    private Set<Email> emails;
+  @OneToMany(mappedBy = "user")
+  private Set<PhoneNumber> phoneNumbers;
+
 }
+
