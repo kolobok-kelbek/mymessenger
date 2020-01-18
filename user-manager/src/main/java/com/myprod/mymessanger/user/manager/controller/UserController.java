@@ -17,52 +17,53 @@ import java.util.UUID;
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 final public class UserController {
 
-    @Autowired
-    private UserService userService;
+  @Autowired
+  private UserService userService;
 
-    @GetMapping("/{uuid}")
-    public User getUser(@PathVariable UUID uuid) {
-        return userService.findUser(uuid);
+  @GetMapping("/{uuid}")
+  public User getUser(@PathVariable UUID uuid) {
+    return userService.findUser(uuid);
+  }
+
+  @PostMapping
+  public User createUser(@RequestBody User user) {
+    userService.saveUser(user);
+
+    return user;
+  }
+
+  @PutMapping
+  public User updateUser(@RequestBody User user) {
+    userService.updateUser(user);
+
+    return user;
+  }
+
+  @GetMapping
+  public BatchDTO<User> getLimitUsers(@RequestParam Integer limit, @RequestParam Integer offset) {
+
+    Page <User> page;
+
+    if (null == limit) {
+      limit = 10;
     }
 
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        userService.saveUser(user);
-
-        return user;
+    if (null == offset){
+      offset = 0;
     }
 
-    @PutMapping
-    public User updateUser(@RequestBody User user) {
-        userService.updateUser(user);
-
-        return user;
+    try {
+      page = userService.findLimitUsers(limit, offset);
+    }
+    catch (Exception e) {
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-    @GetMapping
-    public BatchDTO<User> getLimitUsers(@RequestParam Integer limit, @RequestParam Integer offset) {
-
-        Page<User> page;
-
-        if (null == limit) {
-            limit = 10;
-        }
-
-        if (null == offset) {
-            offset = 0;
-        }
-
-        try {
-            page = userService.findLimitUsers(limit, offset);
-        } catch (Exception e) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-
-        return BatchDTO.<User>builder()
-                .limit(limit)
-                .offset(offset)
-                .number(userService.getCount())
-                .list(page.toList())
-                .build();
-    }
+    return BatchDTO.<User>builder()
+      .limit(limit)
+      .offset(offset)
+      .number(userService.getCount())
+      .list(page.toList())
+      .build();
+  }
 }
