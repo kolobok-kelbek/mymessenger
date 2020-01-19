@@ -32,7 +32,4 @@ public final class User {
     @Column(name = "username")
     private final String username;
 
-    @Column(name = "phones")
-    private final String phone;
-
 }
