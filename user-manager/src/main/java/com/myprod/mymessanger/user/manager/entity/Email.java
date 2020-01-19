@@ -19,7 +19,4 @@ public class Email {
     @GeneratedValue
     private final UUID uuid;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-//    private User user;
 }

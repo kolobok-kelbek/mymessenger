@@ -32,7 +32,7 @@ public final class User {
     @Column(name = "username")
     private final String username;
 
-//    @OneToMany
-//    @JoinColumn(name = "user_id")
-//    private Set<Email> emails;
+    @Column(name = "phones")
+    private final String phone;
+
 }
