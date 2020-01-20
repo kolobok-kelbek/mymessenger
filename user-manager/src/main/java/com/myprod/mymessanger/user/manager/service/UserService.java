@@ -40,20 +40,20 @@ public class UserService {
 
     public Page<User> findLimitUsers(int limit, int offset) {
 
-      if (limit <= 0) {
-        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid value of limit");
-      }
+        if (limit <= 0) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid value of limit");
+        }
 
-      if (offset < 0) {
-        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid value of offset");
-      }
+        if (offset < 0) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid value of offset");
+        }
 
-      Pageable pageable = PageRequest.of(offset, limit);
+        Pageable pageable = PageRequest.of(offset, limit);
 
-      return userRepository.findAll(pageable);
+        return userRepository.findAll(pageable);
     }
 
-  public long getCount() {
-    return userRepository.count();
-  }
+    public long getCount() {
+        return userRepository.count();
+    }
 }

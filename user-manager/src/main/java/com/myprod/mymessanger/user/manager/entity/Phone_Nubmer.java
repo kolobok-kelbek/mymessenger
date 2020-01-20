@@ -16,11 +16,11 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 public class Phone_Nubmer {
 
-  @Id
-  @GeneratedValue
-  private final UUID uuid;
+    @Id
+    @GeneratedValue
+    private final UUID uuid;
 
-  @Column
-  private final String number;
+    @Column
+    private final String number;
 
 }
