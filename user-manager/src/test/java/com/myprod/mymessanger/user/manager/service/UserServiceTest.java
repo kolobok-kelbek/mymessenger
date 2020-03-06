@@ -1,6 +1,8 @@
 package com.myprod.mymessanger.user.manager.service;
 
+import com.myprod.mymessanger.user.manager.entity.Email;
 import com.myprod.mymessanger.user.manager.entity.PhoneNumber;
+import com.myprod.mymessanger.user.manager.repository.EmailRepository;
 import com.myprod.mymessanger.user.manager.repository.PhoneNumberRepository;
 import com.myprod.mymessanger.user.manager.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -30,11 +32,14 @@ class UserServiceTest {
   @Mock
   UserRepository userRepo;
 
+  @Mock
+  EmailRepository emailRepo;
+
 
   @Test
   void addPhoneNumber() {
     Mockito.when(phoneRepo.save(any())).then(returnsFirstArg());
-    userService = new UserService(userRepo, phoneRepo);
+    userService = new UserService(userRepo, phoneRepo, emailRepo);
     PhoneNumber number = PhoneNumber.builder()
       .uuid(UUID.randomUUID())
       .number(phone)
@@ -48,7 +53,7 @@ class UserServiceTest {
   @Test
   void deletePhoneNumber() {
     Mockito.when(phoneRepo.save(any())).then(returnsFirstArg());
-    userService = new UserService(userRepo, phoneRepo);
+    userService = new UserService(userRepo, phoneRepo, emailRepo);
     PhoneNumber number = PhoneNumber.builder()
       .uuid(UUID.randomUUID())
       .number(phone)

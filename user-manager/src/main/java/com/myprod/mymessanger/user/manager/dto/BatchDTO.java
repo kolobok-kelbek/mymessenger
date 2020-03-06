@@ -10,15 +10,15 @@ import java.util.List;
 @Builder
 public class BatchDTO<T> {
 
-    @Getter
-    private long limit;
+  @Getter
+  private long limit;
 
-    @Getter
-    private long offset;
+  @Getter
+  private long offset;
 
-    @Getter
-    private long number;
+  @Getter
+  private long number;
 
-    @Getter
-    private List<T> list;
+  @Getter
+  private List<T> list;
 }

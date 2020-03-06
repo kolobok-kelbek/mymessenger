@@ -36,5 +36,8 @@ public final class User {
   @OneToMany(mappedBy = "user")
   private Set<PhoneNumber> phoneNumbers;
 
+  @OneToMany(mappedBy = "user")
+  private Set<Email> emails;
+
 }
 

@@ -1,7 +1,9 @@
 package com.myprod.mymessanger.user.manager.service;
 
+import com.myprod.mymessanger.user.manager.entity.Email;
 import com.myprod.mymessanger.user.manager.entity.PhoneNumber;
 import com.myprod.mymessanger.user.manager.entity.User;
+import com.myprod.mymessanger.user.manager.repository.EmailRepository;
 import com.myprod.mymessanger.user.manager.repository.PhoneNumberRepository;
 import com.myprod.mymessanger.user.manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +21,13 @@ public class UserService {
 
   private UserRepository userRepository;
   private PhoneNumberRepository phoneNumberRepository;
+  private EmailRepository emailRepository;
 
   @Autowired
-  public UserService(UserRepository userRepository, PhoneNumberRepository phoneNumber) {
+  public UserService(UserRepository userRepository, PhoneNumberRepository phoneNumberRepository, EmailRepository emailRepository) {
     this.userRepository = userRepository;
-    this.phoneNumberRepository = phoneNumber;
+    this.phoneNumberRepository = phoneNumberRepository;
+    this.emailRepository = emailRepository;
   }
 
   public User findUser(UUID uuid) {
@@ -67,6 +71,14 @@ public class UserService {
 
   public void deletePhoneNumber(PhoneNumber phoneNumber) {
     phoneNumberRepository.delete(phoneNumber);
+  }
+
+  public Email addEmail(Email email){
+    return emailRepository.save(email);
+  }
+
+  public void deleteEmail(Email email){
+    emailRepository.delete(email);
   }
 
 }

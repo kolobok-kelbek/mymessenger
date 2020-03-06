@@ -8,10 +8,10 @@ import java.util.Date;
 
 @Value
 @Builder
-public class PhoneDTO {
+public class EmailDTO {
 
   @Getter
-  private String number;
+  private String email;
 
   @Getter
   private Date createAt;
