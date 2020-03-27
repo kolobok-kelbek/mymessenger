@@ -1,14 +1,13 @@
 package com.myprod.mymessenger.user.manager.entity;
 
 import lombok.*;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -55,6 +54,14 @@ public final class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private Set<PhoneNumber> phoneNumbers;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Email> emails;
+
+    private Date updatedAt;
+
+    @Column(nullable = false)
+    private Date createdAt = new Date();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

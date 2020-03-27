@@ -3,6 +3,7 @@ package unit.com.myprod.mymessenger.user.manager.service;
 import com.github.javafaker.Faker;
 import com.myprod.mymessenger.user.manager.entity.PhoneNumber;
 import com.myprod.mymessenger.user.manager.entity.User;
+import com.myprod.mymessenger.user.manager.repository.EmailRepository;
 import com.myprod.mymessenger.user.manager.repository.PhoneNumberRepository;
 import com.myprod.mymessenger.user.manager.repository.RoleRepository;
 import com.myprod.mymessenger.user.manager.repository.UserRepository;
@@ -42,6 +43,9 @@ final public class UserServiceTest {
     @Mock
     RoleRepository roleRepo;
 
+    @Mock
+    EmailRepository emailRepo;
+
     @BeforeEach
     void setUp() {
         faker = Faker.instance();
@@ -54,12 +58,10 @@ final public class UserServiceTest {
     void addPhoneNumber() {
         Mockito.when(phoneRepo.save(any())).then(returnsFirstArg());
 
-        userService = new UserService(userRepo, phoneRepo, roleRepo);
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
 
         PhoneNumber number = PhoneNumber.builder()
-                .id(UUID.randomUUID())
                 .number(phone)
-                .createAt(date)
                 .build();
 
         userService.addPhoneNumber(number);
@@ -71,12 +73,10 @@ final public class UserServiceTest {
     void deletePhoneNumber() {
         Mockito.when(phoneRepo.save(any())).then(returnsFirstArg());
 
-        userService = new UserService(userRepo, phoneRepo, roleRepo);
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
 
         PhoneNumber number = PhoneNumber.builder()
-                .id(UUID.randomUUID())
                 .number(phone)
-                .createAt(date)
                 .build();
         userService.addPhoneNumber(number);
         userService.deletePhoneNumber(number);
@@ -95,7 +95,7 @@ final public class UserServiceTest {
 
         Mockito.when(userRepo.findById(any())).thenReturn(user);
 
-        userService = new UserService(userRepo, phoneRepo, roleRepo);
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
 
         User foundUser = userService.findUser(UUID.randomUUID());
 

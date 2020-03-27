@@ -5,6 +5,25 @@ task dcUp(type: Exec) {
   dependsOn 'installFrontendDependences'
 }
 
+task dcUpUser(type: Exec) {
+  group "docker-compose"
+  executable "docker-compose"
+  args "up", "-d", "user"
+  dependsOn 'user-manager:dockerBuild'
+}
+
+task dcLogsUser(type: Exec) {
+  group "docker-compose"
+  executable "docker-compose"
+  args "logs", "user"
+}
+
+task dcPs(type: Exec) {
+  group "docker-compose"
+  executable "docker-compose"
+  args "ps"
+}
+
 task dcDown(type: Exec) {
   group "docker-compose"
   executable "docker-compose"

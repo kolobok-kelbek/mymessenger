@@ -1,4 +1,4 @@
-package com.myprod.mymessenger.user.manager.model.request;
+package com.myprod.mymessenger.user.manager.model.input;
 
 import com.myprod.mymessenger.user.manager.entity.Role;
 import lombok.*;
@@ -11,7 +11,6 @@ import java.util.Collection;
 @Value
 @Builder
 @RequiredArgsConstructor
-@NoArgsConstructor(force = true)
 public class Sign {
 
     @NotEmpty(message = "Please provide a phone number.")

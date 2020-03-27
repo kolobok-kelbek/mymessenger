@@ -1,9 +1,8 @@
 package com.myprod.mymessenger.user.manager.service;
 
-import com.myprod.mymessenger.user.manager.entity.PhoneNumber;
-import com.myprod.mymessenger.user.manager.entity.Privilege;
-import com.myprod.mymessenger.user.manager.entity.Role;
-import com.myprod.mymessenger.user.manager.entity.User;
+import com.myprod.mymessenger.user.manager.entity.*;
+import com.myprod.mymessenger.user.manager.model.input.PaginationQuery;
+import com.myprod.mymessenger.user.manager.repository.EmailRepository;
 import com.myprod.mymessenger.user.manager.repository.PhoneNumberRepository;
 import com.myprod.mymessenger.user.manager.repository.RoleRepository;
 import com.myprod.mymessenger.user.manager.repository.UserRepository;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -22,48 +22,45 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class UserService implements UserDetailsManager {
 
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PhoneNumberRepository phoneNumberRepository;
+    private EmailRepository emailRepository;
 
     @Autowired
     public UserService(
             UserRepository userRepository,
             PhoneNumberRepository phoneNumberRepository,
-            RoleRepository roleRepository
+            RoleRepository roleRepository,
+            EmailRepository emailRepository
     ) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.phoneNumberRepository = phoneNumberRepository;
+        this.emailRepository = emailRepository;
     }
 
+    public User getCurrentUser() {
+        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    public User findUser(UUID uuid) {
-        return userRepository.findById(uuid).orElse(null);
+        return findUserByPhone(phone);
+    }
+
+    public User findUser(UUID id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     public User findUserByPhone(String Phone) {
         return userRepository.findByPhone(Phone).orElse(null);
     }
 
-    public Page<User> findLimitUsers(int limit, int offset) {
-
-        if (limit <= 0) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid value of limit");
-        }
-
-        if (offset < 0) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid value of offset");
-        }
-
-        Pageable pageable = PageRequest.of(offset, limit);
-
-        return userRepository.findAll(pageable);
+    public Page<User> findLimitUsers(PaginationQuery paginationQuery) {
+        return userRepository.findAll(PageRequest.of(paginationQuery.getOffset(), paginationQuery.getLimit()));
     }
 
     public Role findRole(String name) {
@@ -135,6 +132,10 @@ public class UserService implements UserDetailsManager {
         return userRepository.findByUsername(username).isPresent();
     }
 
+    public boolean userExistsByPhone(String phone) {
+        return userRepository.findByPhone(phone).isPresent();
+    }
+
     private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
         return getGrantedAuthorities(getPrivileges(roles));
     }
@@ -177,4 +178,27 @@ public class UserService implements UserDetailsManager {
         phoneNumberRepository.delete(phoneNumber);
     }
 
+    public Email addEmail(Email email) {
+        return emailRepository.save(email);
+    }
+
+    public void deleteEmail(Email email) {
+        emailRepository.delete(email);
+    }
+
+    public Set<String> getEmailsCurrentUser() {
+        return getCurrentUser()
+                .getEmails()
+                .stream()
+                .map(Email::getEmail)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<String> getPhoneNumbersCurrentUser() {
+        return getCurrentUser()
+                .getPhoneNumbers()
+                .stream()
+                .map(PhoneNumber::getNumber)
+                .collect(Collectors.toSet());
+    }
 }

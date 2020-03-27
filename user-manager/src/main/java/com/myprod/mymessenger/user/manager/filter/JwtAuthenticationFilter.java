@@ -3,7 +3,7 @@ package com.myprod.mymessenger.user.manager.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myprod.mymessenger.user.manager.configuration.SecurityConstants;
 import com.myprod.mymessenger.user.manager.entity.User;
-import com.myprod.mymessenger.user.manager.model.request.Sign;
+import com.myprod.mymessenger.user.manager.model.input.Sign;
 import com.myprod.mymessenger.user.manager.service.UserService;
 import com.myprod.mymessenger.user.manager.util.cookie.AuthCookieUtil;
 import io.jsonwebtoken.Jwts;

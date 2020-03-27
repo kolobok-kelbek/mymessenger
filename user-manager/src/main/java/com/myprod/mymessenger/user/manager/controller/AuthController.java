@@ -1,43 +1,48 @@
 package com.myprod.mymessenger.user.manager.controller;
 
-import com.myprod.mymessenger.user.manager.converter.dto.RegistrationConverter;
-import com.myprod.mymessenger.user.manager.converter.dto.UserConverter;
 import com.myprod.mymessenger.user.manager.configuration.SecurityConstants;
+import com.myprod.mymessenger.user.manager.converter.SimpleConverter;
+import com.myprod.mymessenger.user.manager.converter.exception.ConvertException;
+import com.myprod.mymessenger.user.manager.converter.factory.ConverterFactory;
 import com.myprod.mymessenger.user.manager.entity.Role;
-import com.myprod.mymessenger.user.manager.model.request.Sign;
+import com.myprod.mymessenger.user.manager.entity.User;
+import com.myprod.mymessenger.user.manager.model.input.Sign;
 import com.myprod.mymessenger.user.manager.model.view.UserView;
 import com.myprod.mymessenger.user.manager.service.UserService;
 import com.myprod.mymessenger.user.manager.util.cookie.AuthCookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Collections;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RestController
 @RequestMapping(value = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
     private final UserService userService;
 
-    private final RegistrationConverter registrationDataAssembler;
+    private final SimpleConverter<Sign, User> signToUserConverter;
 
-    private final UserConverter userAssembler;
+    private final SimpleConverter<User, UserView> UserToUserViewConverter;
 
     @Autowired
-    public AuthController(
-            UserService userService,
-            RegistrationConverter registrationDataAssembler,
-            UserConverter userAssembler
-    ) {
+    public AuthController(final UserService userService, final ConverterFactory converterFactory) {
         this.userService = userService;
-        this.registrationDataAssembler = registrationDataAssembler;
-        this.userAssembler = userAssembler;
+
+        this.signToUserConverter = converterFactory.createSimpleConverter();
+        this.UserToUserViewConverter = converterFactory.createSimpleConverter();
     }
 
     @PostMapping("/signup")
-    public UserView signUp(@Valid @RequestBody Sign sign) {
+    public UserView signUp(@Valid @RequestBody final Sign sign) throws ConvertException {
+        if (userService.userExistsByPhone(sign.getPhone())) {
+            throw new ResponseStatusException(BAD_REQUEST, "User with this phone number exist.");
+        }
 
         Sign signWithRoles = Sign.builder()
                 .password(sign.getPassword())
@@ -45,15 +50,15 @@ public class AuthController {
                 .roleList(Collections.singletonList(userService.findRole(Role.USER)))
                 .build();
 
-        com.myprod.mymessenger.user.manager.entity.User user = registrationDataAssembler.convertDto(signWithRoles);
+        User user = signToUserConverter.convert(signWithRoles, User.class);
 
         userService.createUser(user);
 
-        return userAssembler.convertEntity(user);
+        return UserToUserViewConverter.convert(user, UserView.class);
     }
 
     @GetMapping("/logout")
-    public void logout(HttpServletResponse response) {
+    public void logout(final HttpServletResponse response) {
         AuthCookieUtil.clear(response, SecurityConstants.TOKEN_COOKIE);
     }
 }

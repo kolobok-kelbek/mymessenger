@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 
 @Value
 @Builder(toBuilder = true)
@@ -25,6 +26,9 @@ public class Role implements Serializable {
 
     @Column(nullable = false, unique = true)
     private String name;
+
+    @Column(nullable = false)
+    private Date createdAt = new Date();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

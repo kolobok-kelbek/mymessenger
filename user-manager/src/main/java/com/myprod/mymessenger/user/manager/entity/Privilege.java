@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Value
 @Builder(toBuilder = true)
@@ -28,6 +29,9 @@ public class Privilege implements GrantedAuthority, Serializable {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private Date createdAt = new Date();
 
     @Override
     public String getAuthority() {
