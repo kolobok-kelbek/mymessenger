@@ -21,7 +21,7 @@ public class ListView<T> {
         return this.meta;
     }
 
-    public static <T> ListView<T> getListView(List<T> data, MetaView meta) {
+    public static <T> ListView<T> createListView(List<T> data, MetaView meta) {
         return new ListView<>(data, meta);
     }
 }

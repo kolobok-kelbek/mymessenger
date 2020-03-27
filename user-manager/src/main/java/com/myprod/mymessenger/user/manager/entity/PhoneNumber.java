@@ -16,21 +16,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
 public class PhoneNumber {
-
     @Id
-    @GeneratedValue
-    @Column(nullable = false, updatable = false)
-    private UUID id;
-
-    @Column(unique = true)
+    @Column(unique = true, updatable = false)
     private String number;
 
-    @Column
-    private Date createAt;
+    @Column(nullable = false)
+    private Date createdAt = new Date();
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-
-
 }

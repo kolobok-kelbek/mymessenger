@@ -23,7 +23,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
+#        dialect: com.myprod.mymessenger.user.manager.hibernate.dialect.CustomPostgreSqlDialect
 
         # Fix Postgres JPA Error:
         # Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented.

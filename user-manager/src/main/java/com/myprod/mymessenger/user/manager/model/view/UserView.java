@@ -1,29 +1,29 @@
 package com.myprod.mymessenger.user.manager.model.view;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
+import lombok.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Value
-@Builder(toBuilder = true)
+@Builder
+@RequiredArgsConstructor
+@NoArgsConstructor(force = true)
 public class UserView {
-    @Getter
-    private final UUID uuid;
 
-    @Getter
-    private final String name;
+    private final UUID id;
 
-    @Getter
+    private final String firstName;
+
     private final String surname;
 
-    @Getter
     private final String lastName;
 
-    @Getter
-    private final String nickname;
+    private final String username;
 
-    @Getter
-    private String phone;
+    private final String mainPhone;
+
+    private final Set<String> emails;
+
+    private final Set<String> phoneNumbers;
 }
