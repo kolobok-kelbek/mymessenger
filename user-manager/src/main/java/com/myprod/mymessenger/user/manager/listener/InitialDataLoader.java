@@ -6,104 +6,99 @@ import com.myprod.mymessenger.user.manager.entity.User;
 import com.myprod.mymessenger.user.manager.repository.PrivilegeRepository;
 import com.myprod.mymessenger.user.manager.repository.RoleRepository;
 import com.myprod.mymessenger.user.manager.repository.UserRepository;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 @Component
 public class InitialDataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
-    boolean alreadySetup = false;
+  boolean alreadySetup = false;
 
-    private UserRepository userRepository;
+  private UserRepository userRepository;
 
-    private RoleRepository roleRepository;
+  private RoleRepository roleRepository;
 
-    private PrivilegeRepository privilegeRepository;
+  private PrivilegeRepository privilegeRepository;
 
-    @Autowired
-    public InitialDataLoader(
-            UserRepository userRepository,
-            RoleRepository roleRepository,
-            PrivilegeRepository privilegeRepository
-    ) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.privilegeRepository = privilegeRepository;
+  @Autowired
+  public InitialDataLoader(
+      UserRepository userRepository,
+      RoleRepository roleRepository,
+      PrivilegeRepository privilegeRepository) {
+    this.userRepository = userRepository;
+    this.roleRepository = roleRepository;
+    this.privilegeRepository = privilegeRepository;
+  }
+
+  @Override
+  @Transactional
+  public void onApplicationEvent(ContextRefreshedEvent event) {
+
+    if (alreadySetup) {
+      return;
     }
 
-    @Override
-    @Transactional
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    Privilege readPrivilege = createPrivilegeIfNotFound(Privilege.READ);
+    Privilege writePrivilege = createPrivilegeIfNotFound(Privilege.WRITE);
 
-        if (alreadySetup) {
-            return;
-        }
+    List<Privilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege);
 
-        Privilege readPrivilege = createPrivilegeIfNotFound(Privilege.READ);
-        Privilege writePrivilege = createPrivilegeIfNotFound(Privilege.WRITE);
+    createRoleIfNotFound(Role.ADMIN, adminPrivileges);
+    createRoleIfNotFound(Role.USER, Collections.singletonList(readPrivilege));
 
-        List<Privilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege);
+    Role adminRole = roleRepository.findByName(Role.ADMIN);
 
-        createRoleIfNotFound(Role.ADMIN, adminPrivileges);
-        createRoleIfNotFound(Role.USER, Collections.singletonList(readPrivilege));
+    String password =
+        PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("testpassword");
 
-        Role adminRole = roleRepository.findByName(Role.ADMIN);
+    User user =
+        User.builder()
+            .firstName("Test")
+            .lastName("Test")
+            .password(password)
+            .phone("+77777777777")
+            .roles(Collections.singletonList(adminRole))
+            .enabled(true)
+            .build();
 
-        String password = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("testpassword");
+    userRepository.save(user);
 
-        User user = User.builder()
-                .firstName("Test")
-                .lastName("Test")
-                .password(password)
-                .phone("+77777777777")
-                .roles(Collections.singletonList(adminRole))
-                .enabled(true)
-                .build();
+    alreadySetup = true;
+  }
 
-        userRepository.save(user);
+  @Transactional
+  Privilege createPrivilegeIfNotFound(String name) {
 
-        alreadySetup = true;
+    Privilege privilege = privilegeRepository.findByName(name);
+
+    if (null == privilege) {
+      privilege = Privilege.builder().name(name).build();
+
+      privilegeRepository.save(privilege);
     }
 
-    @Transactional
-    Privilege createPrivilegeIfNotFound(String name) {
+    return privilege;
+  }
 
-        Privilege privilege = privilegeRepository.findByName(name);
+  @Transactional
+  Role createRoleIfNotFound(String name, Collection<Privilege> privileges) {
 
-        if (null == privilege) {
-            privilege = Privilege.builder().
-                    name(name)
-                    .build();
+    Role role = roleRepository.findByName(name);
 
-            privilegeRepository.save(privilege);
-        }
+    if (null == role) {
+      role = Role.builder().name(name).privileges(privileges).build();
 
-        return privilege;
+      roleRepository.save(role);
     }
 
-    @Transactional
-    Role createRoleIfNotFound(String name, Collection<Privilege> privileges) {
-
-        Role role = roleRepository.findByName(name);
-
-        if (null == role) {
-            role = Role.builder()
-                    .name(name)
-                    .privileges(privileges)
-                    .build();
-
-            roleRepository.save(role);
-        }
-
-        return role;
-    }
+    return role;
+  }
 }

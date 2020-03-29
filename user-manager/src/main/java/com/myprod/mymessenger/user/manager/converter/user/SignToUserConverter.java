@@ -10,19 +10,19 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SignToUserConverter implements Converter<Sign, User> {
-    @Override
-    public User convert(MappingContext<Sign, User> context) {
-        Sign sign = context.getSource();
+  @Override
+  public User convert(MappingContext<Sign, User> context) {
+    Sign sign = context.getSource();
 
-        return User.builder()
-                .phone(sign.getPhone())
-                .password(passwordEncoder().encode(sign.getPassword()))
-                .enabled(true)
-                .roles(sign.getRoleList())
-                .build();
-    }
+    return User.builder()
+        .phone(sign.getPhone())
+        .password(passwordEncoder().encode(sign.getPassword()))
+        .enabled(true)
+        .roles(sign.getRoleList())
+        .build();
+  }
 
-    private PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
+  private PasswordEncoder passwordEncoder() {
+    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  }
 }

@@ -1,10 +1,8 @@
 package com.myprod.mymessenger.user.manager.entity;
 
-import lombok.*;
-
-import javax.persistence.*;
 import java.util.Date;
-import java.util.UUID;
+import javax.persistence.*;
+import lombok.*;
 
 @Value
 @Builder(toBuilder = true)
@@ -13,15 +11,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
 public class Email {
-    @Id
-    @Column(unique = true, updatable = false)
-    private String email;
+  @Id
+  @Column(unique = true, updatable = false)
+  private String email;
 
-    @Column(nullable = false)
-    private Date createdAt = new Date();
+  @Column(nullable = false)
+  private Date createdAt = new Date();
 
-    @ManyToOne
-    @JoinColumn(name = "users_id", referencedColumnName = "id")
-    private User user;
-
+  @ManyToOne
+  @JoinColumn(name = "users_id", referencedColumnName = "id")
+  private User user;
 }

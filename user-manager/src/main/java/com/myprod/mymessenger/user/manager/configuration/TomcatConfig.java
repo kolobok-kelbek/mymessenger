@@ -10,18 +10,19 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class TomcatConfig {
-    @Bean
-    WebServerFactoryCustomizer<TomcatServletWebServerFactory> cookieProcessorCustomizer() {
-        return new WebServerFactoryCustomizer<TomcatServletWebServerFactory>() {
-            @Override
-            public void customize(TomcatServletWebServerFactory tomcatServletWebServerFactory) {
-                tomcatServletWebServerFactory.addContextCustomizers(new TomcatContextCustomizer() {
-                    @Override
-                    public void customize(Context context) {
-                        context.setCookieProcessor(new LegacyCookieProcessor());
-                    }
-                });
-            }
-        };
-    }
+  @Bean
+  WebServerFactoryCustomizer<TomcatServletWebServerFactory> cookieProcessorCustomizer() {
+    return new WebServerFactoryCustomizer<TomcatServletWebServerFactory>() {
+      @Override
+      public void customize(TomcatServletWebServerFactory tomcatServletWebServerFactory) {
+        tomcatServletWebServerFactory.addContextCustomizers(
+            new TomcatContextCustomizer() {
+              @Override
+              public void customize(Context context) {
+                context.setCookieProcessor(new LegacyCookieProcessor());
+              }
+            });
+      }
+    };
+  }
 }

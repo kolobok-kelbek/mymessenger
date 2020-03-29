@@ -1,5 +1,7 @@
 package com.myprod.mymessenger.user.manager.controller;
 
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+
 import com.myprod.mymessenger.user.manager.converter.Converter;
 import com.myprod.mymessenger.user.manager.converter.SimpleConverter;
 import com.myprod.mymessenger.user.manager.converter.exception.ConvertException;
@@ -13,6 +15,9 @@ import com.myprod.mymessenger.user.manager.model.input.PhoneNumberData;
 import com.myprod.mymessenger.user.manager.model.view.ListView;
 import com.myprod.mymessenger.user.manager.model.view.UserView;
 import com.myprod.mymessenger.user.manager.service.UserService;
+import java.util.Set;
+import java.util.UUID;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -20,142 +25,127 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
-import java.util.Set;
-import java.util.UUID;
-
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-
 @RestController
 @RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
-    private final UserService userService;
+  private final UserService userService;
 
-    private final SimpleConverter<User, UserView> userToUserViewConverter;
+  private final SimpleConverter<User, UserView> userToUserViewConverter;
 
-    private final SimpleConverter<UserView, User> userViewToUserConverter;
+  private final SimpleConverter<UserView, User> userViewToUserConverter;
 
-    private final Converter<Page<User>, ListView<UserView>, UserView> listViewConverter;
+  private final Converter<Page<User>, ListView<UserView>, UserView> listViewConverter;
 
-    @Autowired
-    public UserController(final UserService userService, final ConverterFactory converterFactory) {
-        this.userService = userService;
+  @Autowired
+  public UserController(final UserService userService, final ConverterFactory converterFactory) {
+    this.userService = userService;
 
-        userToUserViewConverter = converterFactory.createSimpleConverter();
-        userViewToUserConverter = converterFactory.createSimpleConverter();
-        listViewConverter = converterFactory.createPageToListViewConverter();
+    userToUserViewConverter = converterFactory.createSimpleConverter();
+    userViewToUserConverter = converterFactory.createSimpleConverter();
+    listViewConverter = converterFactory.createPageToListViewConverter();
+  }
+
+  @PreAuthorize("isAuthenticated()")
+  @GetMapping("/user")
+  public UserView getCurrentUser() throws ConvertException {
+    return userToUserViewConverter.convert(userService.getCurrentUser(), UserView.class);
+  }
+
+  @PreAuthorize("isAuthenticated()")
+  @PutMapping("/user")
+  public UserView updateCurrentUser(@RequestBody final UserView userView) throws ConvertException {
+    if (!userService.getCurrentUser().getId().equals(userView.getId())) {
+      throw new ResponseStatusException(FORBIDDEN);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/user")
-    public UserView getCurrentUser() throws ConvertException {
-        return userToUserViewConverter.convert(userService.getCurrentUser(), UserView.class);
-    }
+    User user = userViewToUserConverter.convert(userView, User.class);
 
-    @PreAuthorize("isAuthenticated()")
-    @PutMapping("/user")
-    public UserView updateCurrentUser(@RequestBody final UserView userView) throws ConvertException {
-        if (!userService.getCurrentUser().getId().equals(userView.getId())) {
-            throw new ResponseStatusException(FORBIDDEN);
-        }
+    userService.updateUser(user);
 
-        User user = userViewToUserConverter.convert(userView, User.class);
+    return userToUserViewConverter.convert(user, UserView.class);
+  }
 
-        userService.updateUser(user);
+  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("/users/{uuid}")
+  public UserView getUser(@PathVariable final UUID uuid) throws ConvertException {
+    return userToUserViewConverter.convert(userService.findUser(uuid), UserView.class);
+  }
 
-        return userToUserViewConverter.convert(user, UserView.class);
-    }
+  @PreAuthorize("hasRole('ADMIN')")
+  @PostMapping("/users")
+  public UserView createUser(@RequestBody final User user) throws ConvertException {
+    userService.createUser(user);
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/users/{uuid}")
-    public UserView getUser(@PathVariable final UUID uuid) throws ConvertException {
-        return userToUserViewConverter.convert(userService.findUser(uuid), UserView.class);
-    }
+    return userToUserViewConverter.convert(user, UserView.class);
+  }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/users")
-    public UserView createUser(@RequestBody final User user) throws ConvertException {
-        userService.createUser(user);
+  @PreAuthorize("hasRole('ADMIN')")
+  @PutMapping("/users")
+  public UserView updateUser(@RequestBody final UserView userView) throws ConvertException {
+    User user = userViewToUserConverter.convert(userView, User.class);
 
-        return userToUserViewConverter.convert(user, UserView.class);
-    }
+    userService.updateUser(user);
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/users")
-    public UserView updateUser(@RequestBody final UserView userView) throws ConvertException {
-        User user = userViewToUserConverter.convert(userView, User.class);
+    return userToUserViewConverter.convert(user, UserView.class);
+  }
 
-        userService.updateUser(user);
+  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("/users")
+  public ListView<UserView> getLimitUsers(@Valid @RequestParam PaginationQuery paginationQuery)
+      throws ConvertException {
+    Page<User> page = userService.findLimitUsers(paginationQuery);
 
-        return userToUserViewConverter.convert(user, UserView.class);
-    }
+    return listViewConverter.convert(page, UserView.class);
+  }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/users")
-    public ListView<UserView> getLimitUsers(@Valid @RequestParam PaginationQuery paginationQuery) throws ConvertException {
-        Page<User> page = userService.findLimitUsers(paginationQuery);
+  @PreAuthorize("isAuthenticated()")
+  @PostMapping("/user/phone")
+  public Set<String> createPhone(@Valid @RequestBody final PhoneNumberData phoneNumberData) {
+    User user = userService.getCurrentUser();
 
-        return listViewConverter.convert(page, UserView.class);
-    }
+    PhoneNumber phoneNumber =
+        PhoneNumber.builder().user(user).number(phoneNumberData.getPhoneNumber()).build();
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/user/phone")
-    public Set<String> createPhone(@Valid @RequestBody final PhoneNumberData phoneNumberData) {
-        User user = userService.getCurrentUser();
+    userService.addPhoneNumber(phoneNumber);
 
-        PhoneNumber phoneNumber = PhoneNumber.builder()
-                .user(user)
-                .number(phoneNumberData.getPhoneNumber())
-                .build();
+    return userService.getPhoneNumbersCurrentUser();
+  }
 
-        userService.addPhoneNumber(phoneNumber);
+  @PreAuthorize("isAuthenticated()")
+  @DeleteMapping("/user/phone")
+  public Set<String> deletePhone(@Valid @RequestBody final PhoneNumberData phoneNumberData) {
+    User user = userService.getCurrentUser();
 
-        return userService.getPhoneNumbersCurrentUser();
-    }
+    PhoneNumber delPhoneNumber =
+        PhoneNumber.builder().user(user).number(phoneNumberData.getPhoneNumber()).build();
+    PhoneNumber phoneNumber = userService.addPhoneNumber(delPhoneNumber);
 
-    @PreAuthorize("isAuthenticated()")
-    @DeleteMapping("/user/phone")
-    public Set<String> deletePhone(@Valid @RequestBody final PhoneNumberData phoneNumberData) {
-        User user = userService.getCurrentUser();
+    userService.deletePhoneNumber(phoneNumber);
 
-        PhoneNumber delPhoneNumber = PhoneNumber.builder()
-                .user(user)
-                .number(phoneNumberData.getPhoneNumber())
-                .build();
-        PhoneNumber phoneNumber = userService.addPhoneNumber(delPhoneNumber);
+    return userService.getPhoneNumbersCurrentUser();
+  }
 
-        userService.deletePhoneNumber(phoneNumber);
+  @PreAuthorize("isAuthenticated()")
+  @PostMapping("/user/email")
+  public Set<String> createEmail(@Valid @RequestBody final EmailData email) {
+    User user = userService.getCurrentUser();
 
-        return userService.getPhoneNumbersCurrentUser();
-    }
+    Email addEmail = Email.builder().user(user).email(email.getEmail()).build();
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/user/email")
-    public Set<String> createEmail(@Valid @RequestBody final EmailData email) {
-        User user = userService.getCurrentUser();
+    userService.addEmail(addEmail);
 
-        Email addEmail = Email.builder()
-                .user(user)
-                .email(email.getEmail())
-                .build();
+    return userService.getEmailsCurrentUser();
+  }
 
-        userService.addEmail(addEmail);
+  @PreAuthorize("isAuthenticated()")
+  @DeleteMapping("/user/email")
+  public Set<String> deleteEmail(@Valid @RequestBody final EmailData email) {
+    User user = userService.getCurrentUser();
 
-        return userService.getEmailsCurrentUser();
-    }
+    Email delEmail = Email.builder().user(user).email(email.getEmail()).build();
 
-    @PreAuthorize("isAuthenticated()")
-    @DeleteMapping("/user/email")
-    public Set<String> deleteEmail(@Valid @RequestBody final EmailData email) {
-        User user = userService.getCurrentUser();
+    userService.deleteEmail(delEmail);
 
-        Email delEmail = Email.builder()
-                .user(user)
-                .email(email.getEmail())
-                .build();
-
-        userService.deleteEmail(delEmail);
-
-        return userService.getEmailsCurrentUser();
-    }
+    return userService.getEmailsCurrentUser();
+  }
 }

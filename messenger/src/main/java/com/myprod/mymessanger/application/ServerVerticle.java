@@ -1,5 +1,8 @@
 package com.myprod.mymessanger.application;
 
+import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
+import static java.util.stream.Collectors.toList;
+
 import com.myprod.mymessanger.domain.message.Message;
 import com.myprod.mymessanger.domain.message.Room;
 import com.myprod.mymessanger.domain.user.User;
@@ -16,13 +19,9 @@ import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.graphql.GraphQLHandler;
 import io.vertx.ext.web.handler.graphql.VertxDataFetcher;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
-import static java.util.stream.Collectors.toList;
 
 public class ServerVerticle extends AbstractVerticle {
 
@@ -39,9 +38,7 @@ public class ServerVerticle extends AbstractVerticle {
     Router router = Router.router(vertx);
     router.route("/graphql").handler(GraphQLHandler.create(createGraphQL()));
 
-    vertx.createHttpServer()
-      .requestHandler(router)
-      .listen(8888);
+    vertx.createHttpServer().requestHandler(router).listen(8888);
   }
 
   private void prepareData() {
@@ -51,14 +48,12 @@ public class ServerVerticle extends AbstractVerticle {
 
     messages = new ArrayList<>();
     messages.add(
-      Message
-        .builder()
-        .uuid(UUID.randomUUID())
-        .message("this is message")
-        .owner(ilia)
-        .room(room)
-        .build()
-    );
+        Message.builder()
+            .uuid(UUID.randomUUID())
+            .message("this is message")
+            .owner(ilia)
+            .room(room)
+            .build());
   }
 
   private GraphQL createGraphQL() {
@@ -67,25 +62,27 @@ public class ServerVerticle extends AbstractVerticle {
     SchemaParser schemaParser = new SchemaParser();
     TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);
 
-    RuntimeWiring runtimeWiring = newRuntimeWiring()
-      .type("Query", builder -> {
-        VertxDataFetcher<List<Message>> getAllMessages = new VertxDataFetcher<>(this::getAllMessages);
-        return builder.dataFetcher("allMessages", getAllMessages);
-      })
-      .build();
+    RuntimeWiring runtimeWiring =
+        newRuntimeWiring()
+            .type(
+                "Query",
+                builder -> {
+                  VertxDataFetcher<List<Message>> getAllMessages =
+                      new VertxDataFetcher<>(this::getAllMessages);
+                  return builder.dataFetcher("allMessages", getAllMessages);
+                })
+            .build();
 
     SchemaGenerator schemaGenerator = new SchemaGenerator();
-    GraphQLSchema graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
+    GraphQLSchema graphQLSchema =
+        schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
 
-    return GraphQL.newGraphQL(graphQLSchema)
-      .build();
+    return GraphQL.newGraphQL(graphQLSchema).build();
   }
 
   private void getAllMessages(DataFetchingEnvironment env, Promise<List<Message>> future) {
     boolean secureOnly = env.getArgument("secureOnly");
-    List<Message> result = messages.stream()
-      .filter(message -> !secureOnly)
-      .collect(toList());
+    List<Message> result = messages.stream().filter(message -> !secureOnly).collect(toList());
     future.complete(result);
   }
 }

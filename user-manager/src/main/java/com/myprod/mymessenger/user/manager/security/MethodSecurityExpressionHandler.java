@@ -9,26 +9,22 @@ import org.springframework.security.core.Authentication;
 
 public class MethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
 
-    private UserService userService;
+  private UserService userService;
 
-    @Override
-    protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
-            Authentication authentication,
-            MethodInvocation invocation
-    ) {
+  @Override
+  protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
+      Authentication authentication, MethodInvocation invocation) {
 
-        WebSecurityExpressionOperations root = new WebSecurityExpressionOperations(
-                authentication,
-                userService
-        );
+    WebSecurityExpressionOperations root =
+        new WebSecurityExpressionOperations(authentication, userService);
 
-        root.setPermissionEvaluator(getPermissionEvaluator());
-        root.setTrustResolver(new AuthenticationTrustResolverImpl());
+    root.setPermissionEvaluator(getPermissionEvaluator());
+    root.setTrustResolver(new AuthenticationTrustResolverImpl());
 
-        return root;
-    }
+    return root;
+  }
 
-    public void setUserService(final UserService userService) {
-        this.userService = userService;
-    }
+  public void setUserService(final UserService userService) {
+    this.userService = userService;
+  }
 }
