@@ -40,6 +40,9 @@ You can install plugins for more comfortable development:
 2. [GraphQL plugin](https://plugins.jetbrains.com/plugin/8097-js-graphql/)
 3. [Ideolog plugin](https://plugins.jetbrains.com/plugin/9746-ideolog/)
 
+# Code Style
+Need download [Google Code Style config](https://raw.githubusercontent.com/google/styleguide/gh-pages/intellij-java-google-style.xml)
+and export in `File→Settings→Editor→Code Style`
 
 # Admin panels
 
