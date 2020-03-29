@@ -7,6 +7,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,78 +22,73 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
+  private static final Logger log = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
+  public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
+    super(authenticationManager);
+  }
+
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws IOException, ServletException {
+
+    var authentication = getAuthentication(request);
+
+    if (authentication == null) {
+      filterChain.doFilter(request, response);
+
+      return;
     }
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws IOException, ServletException {
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    filterChain.doFilter(request, response);
+  }
 
-        var authentication = getAuthentication(request);
+  private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
 
-        if (authentication == null) {
-            filterChain.doFilter(request, response);
+    var token = AuthCookieUtil.getValue(request, SecurityConstants.TOKEN_COOKIE);
 
-            return;
+    if (null != token && !token.isEmpty() && token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
+      try {
+        var signingKey = SecurityConstants.JWT_SECRET.getBytes();
+
+        var parsedToken =
+            Jwts.parser()
+                .setSigningKey(signingKey)
+                .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, ""));
+
+        var userPhone = parsedToken.getBody().getSubject();
+
+        var authorities =
+            ((List<?>) parsedToken.getBody().get(SecurityConstants.TOKEN_PARAM_KEY_ROLES))
+                .stream()
+                .map(authority -> new SimpleGrantedAuthority((String) authority))
+                .collect(Collectors.toList());
+
+        if (null != userPhone && !userPhone.isEmpty()) {
+          return new UsernamePasswordAuthenticationToken(userPhone, null, authorities);
         }
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        filterChain.doFilter(request, response);
+      } catch (ExpiredJwtException exception) {
+        log.warn("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
+      } catch (UnsupportedJwtException exception) {
+        log.warn(
+            "Request to parse unsupported JWT : {} failed : {}", token, exception.getMessage());
+      } catch (MalformedJwtException exception) {
+        log.warn("Request to parse invalid JWT : {} failed : {}", token, exception.getMessage());
+      } catch (SignatureException exception) {
+        log.warn(
+            "Request to parse JWT with invalid signature : {} failed : {}",
+            token,
+            exception.getMessage());
+      } catch (IllegalArgumentException exception) {
+        log.warn(
+            "Request to parse empty or null JWT : {} failed : {}", token, exception.getMessage());
+      }
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-
-        var token = AuthCookieUtil.getValue(request, SecurityConstants.TOKEN_COOKIE);
-
-        if (null != token && !token.isEmpty() && token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
-            try {
-                var signingKey = SecurityConstants.JWT_SECRET.getBytes();
-
-                var parsedToken = Jwts.parser()
-                        .setSigningKey(signingKey)
-                        .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, ""));
-
-                var userPhone = parsedToken
-                        .getBody()
-                        .getSubject();
-
-                var authorities = ((List<?>) parsedToken.getBody()
-                        .get(SecurityConstants.TOKEN_PARAM_KEY_ROLES)).stream()
-                        .map(authority -> new SimpleGrantedAuthority((String) authority))
-                        .collect(Collectors.toList());
-
-                if (null != userPhone && !userPhone.isEmpty()) {
-                    return new UsernamePasswordAuthenticationToken(userPhone, null, authorities);
-                }
-            } catch (ExpiredJwtException exception) {
-                log.warn("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
-            } catch (UnsupportedJwtException exception) {
-                log.warn("Request to parse unsupported JWT : {} failed : {}", token, exception.getMessage());
-            } catch (MalformedJwtException exception) {
-                log.warn("Request to parse invalid JWT : {} failed : {}", token, exception.getMessage());
-            } catch (SignatureException exception) {
-                log.warn("Request to parse JWT with invalid signature : {} failed : {}", token, exception.getMessage());
-            } catch (IllegalArgumentException exception) {
-                log.warn("Request to parse empty or null JWT : {} failed : {}", token, exception.getMessage());
-            }
-        }
-
-        return null;
-    }
+    return null;
+  }
 }

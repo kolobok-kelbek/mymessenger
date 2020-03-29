@@ -1,11 +1,10 @@
 package com.myprod.mymessanger.domain.user;
 
+import java.util.UUID;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
-
-import java.util.UUID;
 
 @Value
 @Builder(toBuilder = true)

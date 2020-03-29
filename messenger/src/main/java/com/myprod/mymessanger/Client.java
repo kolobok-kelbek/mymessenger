@@ -18,23 +18,27 @@ public class Client extends AbstractVerticle {
   public void start() {
     WebClient webClient = WebClient.create(vertx, new WebClientOptions().setDefaultPort(8080));
 
-    JsonObject request = new JsonObject()
-      .put("query", "query($secure: Boolean) { allLinks(secureOnly: $secure) { url, postedBy { name } } }")
-      .put("variables", new JsonObject().put("secure", true));
+    JsonObject request =
+        new JsonObject()
+            .put(
+                "query",
+                "query($secure: Boolean) { allLinks(secureOnly: $secure) { url, postedBy { name } } }")
+            .put("variables", new JsonObject().put("secure", true));
 
-    webClient.post("/graphql")
-      .expect(ResponsePredicate.SC_OK)
-      .expect(ResponsePredicate.JSON)
-      .as(BodyCodec.jsonObject())
-      .sendJsonObject(request, ar -> {
-
-        if (ar.succeeded()) {
-          JsonObject response = ar.result().body();
-          System.out.println("response = " + response.encodePrettily());
-        } else {
-          ar.cause().printStackTrace();
-        }
-
-      });
+    webClient
+        .post("/graphql")
+        .expect(ResponsePredicate.SC_OK)
+        .expect(ResponsePredicate.JSON)
+        .as(BodyCodec.jsonObject())
+        .sendJsonObject(
+            request,
+            ar -> {
+              if (ar.succeeded()) {
+                JsonObject response = ar.result().body();
+                System.out.println("response = " + response.encodePrettily());
+              } else {
+                ar.cause().printStackTrace();
+              }
+            });
   }
 }

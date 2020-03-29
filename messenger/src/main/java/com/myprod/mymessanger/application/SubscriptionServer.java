@@ -1,8 +1,10 @@
 package com.myprod.mymessanger.application;
 
+import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
+
 import com.myprod.mymessanger.domain.message.Message;
-import com.myprod.mymessanger.domain.user.User;
 import com.myprod.mymessanger.domain.message.Room;
+import com.myprod.mymessanger.domain.user.User;
 import graphql.GraphQL;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLSchema;
@@ -17,14 +19,11 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.graphql.ApolloWSHandler;
 import io.vertx.reactivex.RxHelper;
-import org.reactivestreams.Publisher;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
-import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
+import org.reactivestreams.Publisher;
 
 public class SubscriptionServer extends AbstractVerticle {
 
@@ -41,11 +40,9 @@ public class SubscriptionServer extends AbstractVerticle {
     Router router = Router.router(vertx);
     router.route("/graphql").handler(ApolloWSHandler.create(createGraphQL()));
 
-    HttpServerOptions httpServerOptions = new HttpServerOptions()
-      .setWebsocketSubProtocols("graphql-ws");
-    vertx.createHttpServer(httpServerOptions)
-      .requestHandler(router)
-      .listen(8080);
+    HttpServerOptions httpServerOptions =
+        new HttpServerOptions().setWebsocketSubProtocols("graphql-ws");
+    vertx.createHttpServer(httpServerOptions).requestHandler(router).listen(8080);
   }
 
   private void prepareData() {
@@ -55,14 +52,12 @@ public class SubscriptionServer extends AbstractVerticle {
 
     messages = new ArrayList<>();
     messages.add(
-      Message
-        .builder()
-        .uuid(UUID.randomUUID())
-        .message("this is message")
-        .owner(ilia)
-        .room(room)
-        .build()
-    );
+        Message.builder()
+            .uuid(UUID.randomUUID())
+            .message("this is message")
+            .owner(ilia)
+            .room(room)
+            .build());
   }
 
   private GraphQL createGraphQL() {
@@ -71,20 +66,21 @@ public class SubscriptionServer extends AbstractVerticle {
     SchemaParser schemaParser = new SchemaParser();
     TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);
 
-    RuntimeWiring runtimeWiring = newRuntimeWiring()
-      .type("Subscription", builder -> builder.dataFetcher("messages", this::messagesFetcher))
-      .build();
+    RuntimeWiring runtimeWiring =
+        newRuntimeWiring()
+            .type("Subscription", builder -> builder.dataFetcher("messages", this::messagesFetcher))
+            .build();
 
     SchemaGenerator schemaGenerator = new SchemaGenerator();
-    GraphQLSchema graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
+    GraphQLSchema graphQLSchema =
+        schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
 
-    return GraphQL.newGraphQL(graphQLSchema)
-      .build();
+    return GraphQL.newGraphQL(graphQLSchema).build();
   }
 
   private Publisher<Message> messagesFetcher(DataFetchingEnvironment env) {
     return Flowable.interval(1, TimeUnit.SECONDS) // Ticks
-      .zipWith(Flowable.fromIterable(messages), (tick, link) -> link) // Emit link on each tick
-      .observeOn(RxHelper.scheduler(context)); // Observe on the verticle context thread
+        .zipWith(Flowable.fromIterable(messages), (tick, link) -> link) // Emit link on each tick
+        .observeOn(RxHelper.scheduler(context)); // Observe on the verticle context thread
   }
 }

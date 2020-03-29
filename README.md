@@ -14,6 +14,9 @@ After changed files, you need execute commands:
 1. `./gradlew rebuildMessenger`   // for messenger
 2. `./gradlew rebuildUserManager` // for user manager
 
+### Code Style fix:
+1. `./gradlew messenger:goJF`   // for messenger
+2. `./gradlew user-manager:goJF` // for user manager
 
 # For Windows
 
@@ -31,6 +34,9 @@ After changed files, you need execute commands:
 1. `gradlew.bat rebuildMessenger`   // for messenger
 2. `gradlew.bat rebuildUserManager` // for user manager
 
+### Code Style fix:
+1. `gradlew.bat messenger:goJF`   // for messenger
+2. `gradlew.bat user-manager:goJF` // for user manager
 
 # Intellij IDEA
 

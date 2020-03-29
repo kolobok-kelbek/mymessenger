@@ -10,18 +10,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationConfiguration {
 
-    @Bean
-    public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
+  @Bean
+  public ModelMapper modelMapper() {
+    ModelMapper modelMapper = new ModelMapper();
 
-        modelMapper
-                .getConfiguration()
-                .setMatchingStrategy(MatchingStrategies.STRICT)
-                .setFieldMatchingEnabled(true)
-                .setSkipNullEnabled(true)
-                .setFieldAccessLevel(AccessLevel.PRIVATE)
-                .addValueReader(new JsonNodeValueReader());
+    modelMapper
+        .getConfiguration()
+        .setMatchingStrategy(MatchingStrategies.STRICT)
+        .setFieldMatchingEnabled(true)
+        .setSkipNullEnabled(true)
+        .setFieldAccessLevel(AccessLevel.PRIVATE)
+        .addValueReader(new JsonNodeValueReader());
 
-        return modelMapper;
-    }
+    return modelMapper;
+  }
 }

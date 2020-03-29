@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PrivilegeRepository extends JpaRepository<Privilege, Long> {
-    @Query("select t from #{#entityName} t where t.name = ?1")
-    Privilege findByName(String name);
+  @Query("select t from #{#entityName} t where t.name = ?1")
+  Privilege findByName(String name);
 }
