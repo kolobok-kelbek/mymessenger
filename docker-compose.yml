@@ -59,19 +59,21 @@ services:
       - 8082:8081
 
   db:
-    image: postgres:12
+    image: postgres:12-alpine
     container_name: mymess-postgres
     environment:
-      POSTGRES_USER: root
+      POSTGRES_USER: mymess
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: mymessenger
     ports:
       - 5432:5432
     volumes:
-      - mymess-db-data:/var/lib/postgresql/data
-      - ./logs/postgres:/var/log/postgresql
+      - mymess-db-config-data:/var/lib/postgresql/data
+      - ./logs/postgres:/log/postgresql
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
     networks:
       - mymess-network
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
 
   adminer:
     image: adminer
@@ -114,7 +116,7 @@ networks:
   mymess-network:
 
 volumes:
-  mymess-db-data:
+  mymess-db-config-data:
   mymess-redis-data:
   mymess-cassandra-data:
     driver: local
