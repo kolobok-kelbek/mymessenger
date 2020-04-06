@@ -1,7 +1,14 @@
+buildscript {
+    dependencies {
+        classpath 'org.postgresql:postgresql:42.2.12'
+    }
+}
+
 plugins {
     id 'org.springframework.boot' version '2.2.2.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'com.github.sherter.google-java-format' version '0.8'
+    id "org.flywaydb.flyway" version "6.3.2"
     id 'java'
 }
 
@@ -18,6 +25,7 @@ configurations {
 repositories {
     mavenCentral()
 }
+
 
 dependencies {
     // Spring
@@ -61,6 +69,7 @@ dependencies {
 
     // Faker
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
+
 }
 
 test {
@@ -85,4 +94,12 @@ task dockerBuild(type: Exec) {
     executable "docker"
     args "build", "-f", "docker/Dockerfile", "-t", "mymess-user-manager:1.0", "."
     dependsOn 'build'
+}
+
+flyway {
+    url = "jdbc:postgresql://localhost:5432/mymessenger"
+    locations = ["filesystem:src/main/resources/db/migration"]
+    baselineVersion = 1
+    user = "mymess"
+    password = "pass"
 }
