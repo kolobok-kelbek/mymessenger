@@ -54,8 +54,13 @@ and export in `File→Settings→Editor→Code Style`
 
 #### For postgresql - [adminer](http://localhost/adminer)<br>
 server - `db`<br>
-username - `root`<br>
+username - `mymess`<br>
 password - `pass`<br>
 database - `mymessenger`<br>
 
 #### For redis - [redis commander](http://localhost:8082/)
+
+# Migrating the database
+execute Flyway to migrate our database:
+
+`gradle flywayMigrate -i`
