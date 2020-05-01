@@ -70,8 +70,6 @@ dependencies {
     // Faker
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
 
-    compile 'com.google.googlejavaformat:google-java-format:1.7'
-
 }
 
 test {
