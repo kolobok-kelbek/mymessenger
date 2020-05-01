@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.github.javafaker.Faker;
+import com.myprod.mymessenger.user.manager.entity.Email;
 import com.myprod.mymessenger.user.manager.entity.PhoneNumber;
 import com.myprod.mymessenger.user.manager.entity.User;
 import com.myprod.mymessenger.user.manager.repository.EmailRepository;
@@ -31,6 +32,8 @@ public final class UserServiceTest {
 
   String phone;
 
+  String mail;
+
   Date date;
 
   @Mock PhoneNumberRepository phoneRepo;
@@ -41,12 +44,15 @@ public final class UserServiceTest {
 
   @Mock EmailRepository emailRepo;
 
+  final int ONE_INVOCATION = 1;
+
   @BeforeEach
   void setUp() {
     faker = Faker.instance();
 
     phone = faker.phoneNumber().phoneNumber();
     date = faker.date().birthday();
+    mail = faker.internet().emailAddress();
   }
 
   @Test
@@ -59,7 +65,7 @@ public final class UserServiceTest {
 
     userService.addPhoneNumber(number);
 
-    verify(phoneRepo, times(1)).save(any());
+    verify(phoneRepo, times(ONE_INVOCATION)).save(any());
   }
 
   @Test
@@ -71,14 +77,14 @@ public final class UserServiceTest {
     PhoneNumber number = PhoneNumber.builder().number(phone).build();
     userService.addPhoneNumber(number);
     userService.deletePhoneNumber(number);
-    verify(phoneRepo, times(1)).delete(number);
+    verify(phoneRepo, times(ONE_INVOCATION)).delete(number);
   }
 
   @Test
   void findUser() {
 
     Optional<User> user =
-        Optional.of(User.builder().phone(phone).password(faker.yoda().quote()).build());
+            Optional.of(User.builder().phone(phone).password(faker.yoda().quote()).build());
 
     Mockito.when(userRepo.findById(any())).thenReturn(user);
 
@@ -87,5 +93,27 @@ public final class UserServiceTest {
     User foundUser = userService.findUser(UUID.randomUUID());
 
     assertEquals(phone, foundUser.getPhone());
+  }
+
+  @Test
+  void addEmail() {
+    Mockito.when(emailRepo.save(any())).then(returnsFirstArg());
+
+    userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+
+    Email email = Email.builder().email(mail).build();
+    userService.addEmail(email);
+    verify(emailRepo, times(ONE_INVOCATION)).save(any());
+  }
+
+  @Test
+  void deleteEmail() {
+    Mockito.when(emailRepo.save(any())).then(returnsFirstArg());
+
+    userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+    Email email = Email.builder().email(mail).build();
+    userService.addEmail(email);
+    userService.deleteEmail(email);
+    verify(emailRepo, times(ONE_INVOCATION)).delete(email);
   }
 }
