@@ -44,7 +44,7 @@ public final class UserServiceTest {
 
   @Mock EmailRepository emailRepo;
 
-  final int ONE_INVOCATION = 1;
+  private static final int ONE_INVOCATION = 1;
 
   @BeforeEach
   void setUp() {
@@ -84,7 +84,7 @@ public final class UserServiceTest {
   void findUser() {
 
     Optional<User> user =
-            Optional.of(User.builder().phone(phone).password(faker.yoda().quote()).build());
+        Optional.of(User.builder().phone(phone).password(faker.yoda().quote()).build());
 
     Mockito.when(userRepo.findById(any())).thenReturn(user);
 
