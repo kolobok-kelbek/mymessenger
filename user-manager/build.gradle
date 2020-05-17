@@ -40,7 +40,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     // PostgreSQL driver
-    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'org.postgresql:postgresql:42.2.12'
 
     // JWT
     compile 'io.jsonwebtoken:jjwt-api:0.10.7'
@@ -70,6 +70,10 @@ dependencies {
     // Faker
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
 
+    // Swagger
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
+
 }
 
 test {
@@ -97,9 +101,10 @@ task dockerBuild(type: Exec) {
 }
 
 flyway {
-    url = "jdbc:postgresql://localhost:5432/mymessenger"
+    url = "jdbc:postgresql://localhost:5432/mymessenger?encoding=utf8&useUnicode=true&characterEncoding=UTF-8"
     locations = ["filesystem:src/main/resources/db/migration"]
     baselineVersion = 1
     user = "mymess"
     password = "pass"
 }
+
