@@ -37,24 +37,12 @@ task dcRestartApi(type: Exec) {
   dependsOn 'messenger:dockerBuild'
 }
 
-task dcRestartUserManager(type: Exec) {
-  group "docker-compose"
-  executable "docker-compose"
-  args "up", "--detach", "--build", "user"
-  dependsOn 'user-manager:dockerBuild'
-}
-
 task rebuildMessenger {
   group "application"
   dependsOn dcRestartApi
   doFirst {
     print project('messenger').tasks.dockerBuild
   }
-}
-
-task rebuildUserManager() {
-  group "application"
-  dependsOn 'dcRestartUserManager'
 }
 
 task installFrontendDependences(type: Exec) {

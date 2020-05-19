@@ -12,10 +12,10 @@ services:
       - 80:80
     links:
       - api
-      - frontend
+#      - frontend
       - adminer
       - user
-      - redis-commander
+#      - redis-commander
     networks:
       - mymess-network
 
@@ -26,37 +26,39 @@ services:
       - mymess-network
 
   user:
-    image: mymess-user-manager:1.0
+    build: docker/backend
     container_name: mymess-user-manager
-    networks:
-      - mymess-network
-    ports:
-      - 8081:8080
-      - 5005:5005
-
-  redis:
-    image: redis:4.0.5-alpine
-    container_name: mymess-redis
-    command: ["redis-server", "--appendonly", "yes"]
-    hostname: redis
-    networks:
-      - mymess-network
+    command: gradle bootRun
     volumes:
-      - mymess-redis-data:/data
-
-  redis-commander:
-    container_name: mymess-redis-commander
-    hostname: redis-commander
-    image: rediscommander/redis-commander:latest
-    restart: always
-    environment:
-      - REDIS_HOSTS=local:redis:6379
+      - ./user-manager:/app
+    ports:
+      - 5005:5005
     networks:
       - mymess-network
-    depends_on:
-      - redis
-    ports:
-      - 8082:8081
+
+#  redis:
+#    image: redis:4.0.5-alpine
+#    container_name: mymess-redis
+#    command: ["redis-server", "--appendonly", "yes"]
+#    hostname: redis
+#    networks:
+#      - mymess-network
+#    volumes:
+#      - mymess-redis-data:/data
+#
+#  redis-commander:
+#    container_name: mymess-redis-commander
+#    hostname: redis-commander
+#    image: rediscommander/redis-commander:latest
+#    restart: always
+#    environment:
+#      - REDIS_HOSTS=local:redis:6379
+#    networks:
+#      - mymess-network
+#    depends_on:
+#      - redis
+#    ports:
+#      - 8082:8081
 
   db:
     image: postgres:12-alpine
@@ -84,15 +86,15 @@ services:
     networks:
       - mymess-network
 
-  frontend:
-    build: docker/frontend
-    container_name: mymess-frontend
-    command: bash -c "npm run dev"
-    user: 1000:1000
-    volumes:
-      - ./frontend:/app
-    networks:
-      - mymess-network
+#  frontend:
+#    build: docker/frontend
+#    container_name: mymess-frontend
+#    command: bash -c "npm run dev"
+#    user: 1000:1000
+#    volumes:
+#      - ./frontend:/app
+#    networks:
+#      - mymess-network
 
 #  cassandra:
 #    image: cassandra:3.11
@@ -106,18 +108,18 @@ services:
 #    networks:
 #      - mymess-network
 
-  rabbitmq:
-    image: rabbitmq:3.8.2
-    container_name: mymess-queue
-    networks:
-      - mymess-network
+#  rabbitmq:
+#    image: rabbitmq:3.8.2
+#    container_name: mymess-queue
+#    networks:
+#      - mymess-network
 
 networks:
   mymess-network:
 
 volumes:
   mymess-db-config-data:
-  mymess-redis-data:
-  mymess-cassandra-data:
-    driver: local
-  mymess-kafka-data:
+#  mymess-redis-data:
+#  mymess-cassandra-data:
+#    driver: local
+#  mymess-kafka-data:

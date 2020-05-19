@@ -17,6 +17,10 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
+    developmentOnly
+    runtimeClasspath {
+      extendsFrom developmentOnly
+    }
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -34,6 +38,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
@@ -78,26 +84,6 @@ dependencies {
 
 test {
     useJUnitPlatform()
-}
-
-def Properties localBootRunProperties() {
-    Properties p = new Properties();
-    p.load(new FileInputStream(
-            file(project.projectDir).absolutePath + "/src/main/resources/application.yml"))
-    return p;
-}
-
-build {
-    doFirst {
-        bootRun.systemProperties = localBootRunProperties() as Map<String, ?>
-    }
-}
-
-task dockerBuild(type: Exec) {
-    group "docker"
-    executable "docker"
-    args "build", "-f", "docker/Dockerfile", "-t", "mymess-user-manager:1.0", "."
-    dependsOn 'build'
 }
 
 flyway {
