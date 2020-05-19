@@ -76,6 +76,9 @@ dependencies {
 
 }
 
+build.dependsOn(tasks.googleJavaFormat)
+verifyGoogleJavaFormat.mustRunAfter(tasks.googleJavaFormat)
+
 test {
     useJUnitPlatform()
 }
