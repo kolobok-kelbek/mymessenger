@@ -1,6 +1,6 @@
 package unit.com.myprod.mymessenger.user.manager.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -14,9 +14,11 @@ import com.myprod.mymessenger.user.manager.repository.PhoneNumberRepository;
 import com.myprod.mymessenger.user.manager.repository.RoleRepository;
 import com.myprod.mymessenger.user.manager.repository.UserRepository;
 import com.myprod.mymessenger.user.manager.service.UserService;
+
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,94 +28,174 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public final class UserServiceTest {
-  UserService userService;
+    UserService userService;
 
-  Faker faker;
+    Faker faker;
 
-  String phone;
+    String phone;
 
-  String mail;
+    String mail;
 
-  Date date;
+    Date date;
 
-  @Mock PhoneNumberRepository phoneRepo;
+    @Mock
+    PhoneNumberRepository phoneRepo;
 
-  @Mock UserRepository userRepo;
+    @Mock
+    UserRepository userRepo;
 
-  @Mock RoleRepository roleRepo;
+    @Mock
+    RoleRepository roleRepo;
 
-  @Mock EmailRepository emailRepo;
+    @Mock
+    EmailRepository emailRepo;
 
-  private static final int ONE_INVOCATION = 1;
+    private static final int ONE_INVOCATION = 1;
 
-  @BeforeEach
-  void setUp() {
-    faker = Faker.instance();
+    private static final String FAILED_TO_SAVE_MESSAGE = "failed to save";
 
-    phone = faker.phoneNumber().phoneNumber();
-    date = faker.date().birthday();
-    mail = faker.internet().emailAddress();
-  }
+    private static final String FAILED_TO_FIND_MESSAGE = "failed to find";
 
-  @Test
-  void addPhoneNumber() {
-    Mockito.when(phoneRepo.save(any())).then(returnsFirstArg());
+    private static final String FAILED_TO_DELETE_MESSAGE = "failed to delete";
 
-    userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+    @BeforeEach
+    void setUp() {
+        faker = Faker.instance();
 
-    PhoneNumber number = PhoneNumber.builder().number(phone).build();
+        phone = faker.phoneNumber().phoneNumber();
+        date = faker.date().birthday();
+        mail = faker.internet().emailAddress();
+    }
 
-    userService.addPhoneNumber(number);
+    @Test
+    void addPhoneNumber() {
+        Mockito.when(phoneRepo.save(any())).then(returnsFirstArg());
 
-    verify(phoneRepo, times(ONE_INVOCATION)).save(any());
-  }
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
 
-  @Test
-  void deletePhoneNumber() {
-    Mockito.when(phoneRepo.save(any())).then(returnsFirstArg());
+        PhoneNumber number = PhoneNumber.builder().number(phone).build();
 
-    userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+        userService.addPhoneNumber(number);
 
-    PhoneNumber number = PhoneNumber.builder().number(phone).build();
-    userService.addPhoneNumber(number);
-    userService.deletePhoneNumber(number);
-    verify(phoneRepo, times(ONE_INVOCATION)).delete(number);
-  }
+        verify(phoneRepo, times(ONE_INVOCATION)).save(any());
+    }
 
-  @Test
-  void findUser() {
+    @Test
+    void deletePhoneNumber() {
+        Mockito.when(phoneRepo.save(any())).then(returnsFirstArg());
 
-    Optional<User> user =
-        Optional.of(User.builder().phone(phone).password(faker.yoda().quote()).build());
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
 
-    Mockito.when(userRepo.findById(any())).thenReturn(user);
+        PhoneNumber number = PhoneNumber.builder().number(phone).build();
+        userService.addPhoneNumber(number);
+        userService.deletePhoneNumber(number);
+        verify(phoneRepo, times(ONE_INVOCATION)).delete(number);
+    }
 
-    userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+    @Test
+    void findUser() {
 
-    User foundUser = userService.findUser(UUID.randomUUID());
+        Optional<User> user =
+                Optional.of(User.builder().phone(phone).password(faker.yoda().quote()).build());
 
-    assertEquals(phone, foundUser.getPhone());
-  }
+        Mockito.when(userRepo.findById(any())).thenReturn(user);
 
-  @Test
-  void addEmail() {
-    Mockito.when(emailRepo.save(any())).then(returnsFirstArg());
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
 
-    userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+        User foundUser = userService.findUser(UUID.randomUUID());
 
-    Email email = Email.builder().email(mail).build();
-    userService.addEmail(email);
-    verify(emailRepo, times(ONE_INVOCATION)).save(any());
-  }
+        assertEquals(phone, foundUser.getPhone());
+    }
 
-  @Test
-  void deleteEmail() {
-    Mockito.when(emailRepo.save(any())).then(returnsFirstArg());
+    @Test
+    void addEmail() {
+        Mockito.when(emailRepo.save(any())).then(returnsFirstArg());
 
-    userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
-    Email email = Email.builder().email(mail).build();
-    userService.addEmail(email);
-    userService.deleteEmail(email);
-    verify(emailRepo, times(ONE_INVOCATION)).delete(email);
-  }
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+
+        Email email = Email.builder().email(mail).build();
+        userService.addEmail(email);
+        verify(emailRepo, times(ONE_INVOCATION)).save(any());
+    }
+
+    @Test
+    void deleteEmail() {
+        Mockito.when(emailRepo.save(any())).then(returnsFirstArg());
+
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+        Email email = Email.builder().email(mail).build();
+        userService.addEmail(email);
+        userService.deleteEmail(email);
+        verify(emailRepo, times(ONE_INVOCATION)).delete(email);
+    }
+
+    @Test
+    void addPhoneNumberNegativeTest() {
+
+        Mockito.when(phoneRepo.save(any())).thenThrow(new IllegalArgumentException(FAILED_TO_SAVE_MESSAGE));
+
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+
+        PhoneNumber number = PhoneNumber.builder().number(phone).build();
+
+        Throwable thrown =
+                assertThrows(IllegalArgumentException.class, () -> userService.addPhoneNumber(number));
+
+        assertNotNull(thrown.getMessage());
+        assertEquals(FAILED_TO_SAVE_MESSAGE, thrown.getMessage());
+    }
+
+    @Test
+    void deletePhoneNumberNegativeTest() {
+        PhoneNumber number = PhoneNumber.builder().number(phone).build();
+        Mockito.doThrow(new IllegalArgumentException(FAILED_TO_DELETE_MESSAGE)).when(phoneRepo).delete(any());
+
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+
+        Throwable thrown =
+                assertThrows(IllegalArgumentException.class, () -> userService.deletePhoneNumber(number));
+
+        assertNotNull(thrown.getMessage());
+        assertEquals(FAILED_TO_DELETE_MESSAGE, thrown.getMessage());
+    }
+
+    @Test
+    void findUserNegativeTest() {
+        Mockito.when(userRepo.findById(any())).thenThrow(new IllegalArgumentException(FAILED_TO_FIND_MESSAGE));
+
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+        Throwable thrown = assertThrows(IllegalArgumentException.class, () -> userService.findUser(UUID.randomUUID()));
+
+        assertNotNull(thrown.getMessage());
+        assertEquals(FAILED_TO_FIND_MESSAGE, thrown.getMessage());
+    }
+
+    @Test
+    void addEmailNegativeTest() {
+        Mockito.when(emailRepo.save(any())).thenThrow(new IllegalArgumentException(FAILED_TO_SAVE_MESSAGE));
+
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+
+        Email email = Email.builder().email(mail).build();
+        Throwable thrown =
+                assertThrows(IllegalArgumentException.class, () -> userService.addEmail(email));
+
+        assertNotNull(thrown.getMessage());
+        assertEquals(FAILED_TO_SAVE_MESSAGE, thrown.getMessage());
+    }
+
+    @Test
+    void deleteEmailNegativeTest() {
+        Email email = Email.builder().email(mail).build();
+        Mockito.doThrow(new IllegalArgumentException(FAILED_TO_DELETE_MESSAGE)).when(emailRepo).delete(any());
+
+        userService = new UserService(userRepo, phoneRepo, roleRepo, emailRepo);
+
+        Throwable thrown =
+                assertThrows(IllegalArgumentException.class, () -> userService.deleteEmail(email));
+
+        assertNotNull(thrown.getMessage());
+        assertEquals(FAILED_TO_DELETE_MESSAGE, thrown.getMessage());
+    }
+
 }
