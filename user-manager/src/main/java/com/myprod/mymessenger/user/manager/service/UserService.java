@@ -1,6 +1,7 @@
 package com.myprod.mymessenger.user.manager.service;
 
 import com.myprod.mymessenger.user.manager.entity.*;
+import com.myprod.mymessenger.user.manager.exception.ChangePasswordException;
 import com.myprod.mymessenger.user.manager.model.input.PaginationQuery;
 import com.myprod.mymessenger.user.manager.repository.EmailRepository;
 import com.myprod.mymessenger.user.manager.repository.PhoneNumberRepository;
@@ -8,6 +9,7 @@ import com.myprod.mymessenger.user.manager.repository.RoleRepository;
 import com.myprod.mymessenger.user.manager.repository.UserRepository;
 import java.util.*;
 import java.util.stream.Collectors;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -116,7 +118,18 @@ public class UserService implements UserDetailsManager {
   }
 
   @Override
-  public void changePassword(String oldPassword, String newPassword) {}
+  @SneakyThrows
+  public void changePassword(String oldPassword, String newPassword) {
+    if (oldPassword.equals(newPassword)) {
+      throw new ChangePasswordException("Old password equals new password");
+    }
+    if (newPassword.isEmpty()) {
+      throw new ChangePasswordException("New password can't be empty");
+    }
+    if (oldPassword.isEmpty()) {
+      throw new ChangePasswordException("Password can't be empty");
+    }
+  }
 
   @Override
   public boolean userExists(String username) {
