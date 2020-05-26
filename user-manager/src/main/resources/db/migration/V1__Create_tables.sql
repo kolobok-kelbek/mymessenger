@@ -12,42 +12,46 @@ CREATE TABLE "public"."users"
     "phone"                   character varying(255) NOT NULL,
     "surname"                 character varying(255),
     "username"                character varying(255),
+    "updated_at"              timestamp,
+    "created_at"              timestamp NOT NULL,
     CONSTRAINT "ukdu5v5sr43g5bfnji4vb8hg5s3" UNIQUE ("phone"),
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
 INSERT INTO "users" ("id", "account_non_expired", "account_non_locked", "credentials_non_expired",
                      "enabled", "first_name", "last_name", "password", "phone", "surname",
-                     "username")
+                     "username", "updated_at", "created_at")
 VALUES ('eb8aefef-d441-4030-a3b1-ab99ea379b19', '0', '0', '0', '1', 'Test', 'Test',
         '{bcrypt}$2a$10$.COQ3gwIQcFOcGrOkdlZh.pEUO5XvnbpQWLVnJk8q12U14ica/Qbq', '+77777777777',
-        NULL, NULL);
+        NULL, NULL, NULL, '2020-05-24 18:19:42.247');
 
 DROP TABLE IF EXISTS "role";
 CREATE TABLE "public"."role"
 (
-    "id"   bigint                 NOT NULL,
-    "name" character varying(255) NOT NULL,
+    "id"         bigint                 NOT NULL,
+    "name"       character varying(255) NOT NULL,
+    "created_at" timestamp              NOT NULL,
     CONSTRAINT "role_pkey" PRIMARY KEY ("id"),
     CONSTRAINT "uk_8sewwnpamngi6b1dwaa88askk" UNIQUE ("name")
 ) WITH (oids = false);
 
-INSERT INTO "role" ("id", "name")
-VALUES (3, 'ADMIN'),
-       (4, 'USER');
+INSERT INTO "role" ("id", "name", "created_at")
+VALUES (3, 'ADMIN', '2020-05-24 18:19:42.247'),
+       (4, 'USER', '2020-05-24 18:19:42.247');
 
 DROP TABLE IF EXISTS "privilege";
 CREATE TABLE "public"."privilege"
 (
-    "id"   bigint                 NOT NULL,
-    "name" character varying(255) NOT NULL,
+    "id"         bigint                 NOT NULL,
+    "name"       character varying(255) NOT NULL,
+    "created_at" timestamp              NOT NULL,
     CONSTRAINT "privilege_pkey" PRIMARY KEY ("id"),
     CONSTRAINT "ukh7iwbdg4ev8mgvmij76881tx8" UNIQUE ("name")
 ) WITH (oids = false);
 
-INSERT INTO "privilege" ("id", "name")
-VALUES (1, 'READ'),
-       (2, 'WRITE');
+INSERT INTO "privilege" ("id", "name", "created_at")
+VALUES (1, 'READ', '2020-05-24 18:19:42.247'),
+       (2, 'WRITE', '2020-05-24 18:19:42.247');
 
 DROP TABLE IF EXISTS "roles_privileges";
 CREATE TABLE "public"."roles_privileges"
@@ -79,9 +83,9 @@ DROP TABLE IF EXISTS "emails";
 CREATE TABLE "public"."emails"
 (
     "uuid"      uuid NOT NULL,
-    "create_at" timestamp,
-    "email"     character varying(255),
-    "users_id"  uuid,
+    "create_at"  timestamp NOT NULL,
+    "email"      character varying(255),
+    "users_id"   uuid,
     CONSTRAINT "emails_pkey" PRIMARY KEY ("uuid")
 ) WITH (oids = false);
 
@@ -89,7 +93,7 @@ DROP TABLE IF EXISTS "phone_numbers";
 CREATE TABLE "public"."phone_numbers"
 (
     "id"        uuid NOT NULL,
-    "create_at" timestamp,
+    "create_at" timestamp NOT NULL,
     "number"    character varying(255),
     "user_id"   uuid,
     CONSTRAINT "phone_numbers_pkey" PRIMARY KEY ("id"),

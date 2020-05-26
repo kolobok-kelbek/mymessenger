@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+
+  mymessenger-common-proxy:
+    image: traefik:v2.2
+    container_name: mymessenger-common-proxy
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - mymessenger-network
+
+networks:
+  mymessenger-network:
+    name: mymessenger-network
+

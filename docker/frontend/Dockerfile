@@ -1,9 +1,14 @@
-FROM node:latest
+FROM node:14
 
-RUN mkdir /app
 WORKDIR /app
 
-#COPY package*.json ./
-#RUN npm install
-#
-#CMD [ "npm", "run", "dev" ]
+COPY entrypoint.sh /usr/local/bin/
+
+RUN chmod 777 /usr/local/bin/entrypoint.sh \
+    && ln -s /usr/local/bin/entrypoint.sh /
+
+EXPOSE 3000
+
+ENTRYPOINT ["entrypoint.sh"]
+
+CMD ["npm", "start"]
