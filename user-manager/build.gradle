@@ -83,6 +83,7 @@ dependencies {
 }
 
 build.dependsOn(tasks.googleJavaFormat)
+build.dependsOn(tasks.javadoc)
 verifyGoogleJavaFormat.mustRunAfter(tasks.googleJavaFormat)
 
 test {
@@ -90,7 +91,7 @@ test {
 }
 
 flyway {
-    url = "jdbc:postgresql://localhost:5432/mymessenger?encoding=utf8&useUnicode=true&characterEncoding=UTF-8"
+    url = "jdbc:postgresql://mymessenger-user-manager-backend-db:5432/mymessenger?encoding=utf8&useUnicode=true&characterEncoding=UTF-8"
     locations = ["filesystem:src/main/resources/db/migration"]
     baselineVersion = 1
     user = "mymess"

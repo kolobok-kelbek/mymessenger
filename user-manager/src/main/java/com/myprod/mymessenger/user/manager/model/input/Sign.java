@@ -10,6 +10,7 @@ import lombok.*;
 @Value
 @Builder
 @RequiredArgsConstructor
+@NoArgsConstructor(force = true)
 public class Sign {
 
   @NotEmpty(message = "Please provide a phone number.")

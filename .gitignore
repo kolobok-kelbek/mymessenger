@@ -163,7 +163,4 @@ nbdist/
 !.vscode/extensions.json
 
 ### Logs ###
-logs/nginx/*
-!logs/nginx/.gitkeep
-logs/postgres/*
-!logs/postgres/.gitkeep
+log/**/*.log

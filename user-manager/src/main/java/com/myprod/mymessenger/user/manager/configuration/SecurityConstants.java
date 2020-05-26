@@ -5,7 +5,7 @@ public final class SecurityConstants {
   public static final int TOKEN_LIFETIME_MILLISECOND = 864000000;
   public static final int TOKEN_LIFETIME_SECOND = TOKEN_LIFETIME_MILLISECOND / 1000;
 
-  public static final String AUTH_LOGIN_URL = "/api/auth/signin";
+  public static final String AUTH_LOGIN_URL = "/auth/signin";
 
   // Signing key for HS512 algorithm
   public static final String JWT_SECRET =

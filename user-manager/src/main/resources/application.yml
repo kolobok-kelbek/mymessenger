@@ -8,7 +8,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://db:5432/mymessenger
+    url: jdbc:postgresql://mymessenger-user-manager-backend-db:5432/mymessenger
     username: mymess
     password: pass
 
@@ -35,3 +35,7 @@ spring:
   # ===============================
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+server:
+  tomcat:
+    max-threads: 5

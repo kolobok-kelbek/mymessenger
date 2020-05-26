@@ -1,52 +1,152 @@
-task dcUp(type: Exec) {
-  group "docker-compose"
+/**
+ *  PROXY
+ */
+
+task upProxy(type: Exec) {
+  group "docker-compose.proxy"
+  description "Start proxy container and main network"
   executable "docker-compose"
-  args "up", "-d"
-  dependsOn 'installFrontendDependences'
+  args "-f", "docker-compose.proxy.yml", "up", "-d"
 }
 
-task dcUpUser(type: Exec) {
-  group "docker-compose"
+task logsProxy(type: Exec) {
+  group "docker-compose.proxy"
+  description "Show log from proxy container"
   executable "docker-compose"
-  args "up", "-d", "user"
-  dependsOn 'user-manager:dockerBuild'
+  args "-f", "docker-compose.proxy.yml", "logs", "mymessenger-common-proxy"
 }
 
-task dcLogsUser(type: Exec) {
-  group "docker-compose"
+task psProxy(type: Exec) {
+  group "docker-compose.proxy"
+  description "Show containers list with docker-compose.proxy.yml"
   executable "docker-compose"
-  args "logs", "user"
+  args "-f", "docker-compose.proxy.yml", "ps"
 }
 
-task dcPs(type: Exec) {
-  group "docker-compose"
+task stopProxy(type: Exec) {
+  group "docker-compose.proxy"
+  description "Stop proxy container and main network"
   executable "docker-compose"
-  args "ps"
+  args "-f", "docker-compose.proxy.yml", "stop"
 }
 
-task dcDown(type: Exec) {
-  group "docker-compose"
+task downProxy(type: Exec) {
+  group "docker-compose.proxy"
+  description "Stop and delete proxy container and main network"
   executable "docker-compose"
-  args "down", "-v"
+  args "-f", "docker-compose.proxy.yml", "down", "-v"
 }
 
-task dcRestartApi(type: Exec) {
-  group "docker-compose"
+
+/**
+ *  USER MANAGER BACKEND
+ */
+
+task upUserManagerBackend(type: Exec) {
+  group "docker-compose.user-manager.backend"
+  description "Start all containers with docker-compose.user-manager.backend.yml"
   executable "docker-compose"
-  args "up", "--detach", "--build", "api"
-  dependsOn 'messenger:dockerBuild'
+  args "-f", "docker-compose.user-manager.backend.yml", "up", "-d"
 }
 
-task rebuildMessenger {
-  group "application"
-  dependsOn dcRestartApi
-  doFirst {
-    print project('messenger').tasks.dockerBuild
-  }
+task logsUserManagerBackendDoc(type: Exec) {
+  group "docker-compose.user-manager.backend"
+  description "Show log from mymessenger-user-manager-backend-doc container"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.backend.yml", "logs", "mymessenger-user-manager-backend-doc"
 }
 
-task installFrontendDependences(type: Exec) {
-  group "frontend"
+task logsUserManagerBackendApp(type: Exec) {
+  group "docker-compose.user-manager.backend"
+  description "Show log from mymessenger-user-manager-backend-app container"
   executable "docker-compose"
-  args "run", "frontend", "bash", "-c", "npm i"
+  args "-f", "docker-compose.user-manager.backend.yml", "logs", "mymessenger-user-manager-backend-app"
+}
+
+task logsUserManagerBackendDb(type: Exec) {
+  group "docker-compose.user-manager.backend"
+  description "Show log from mymessenger-user-manager-backend-db container"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.backend.yml", "logs", "mymessenger-user-manager-backend-db"
+}
+
+task logsUserManagerBackendDbAdmin(type: Exec) {
+  group "docker-compose.user-manager.backend"
+  description "Show log from mymessenger-user-manager-backend-db-admin container"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.backend.yml", "logs", "mymessenger-user-manager-backend-db-admin"
+}
+
+task psUserManagerBackend(type: Exec) {
+  group "docker-compose.user-manager.backend"
+  description "Show containers list with docker-compose.user-manager.backend.yml"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.backend.yml", "ps"
+}
+
+task stopUserManagerBackend(type: Exec) {
+  group "docker-compose.user-manager.backend"
+  description "Stop all containers with docker-compose.user-manager.backend.yml"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.backend.yml", "stop"
+}
+
+task downUserManagerBackend(type: Exec) {
+  group "docker-compose.user-manager.backend"
+  description "Stop and delete all containers and volumes with docker-compose.user-manager.backend.yml"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.backend.yml", "down", "-v"
+}
+
+task buildUserManagerBackend(type: Exec) {
+  group "docker-compose.user-manager.backend"
+  description "Build all containers with docker-compose.user-manager.backend.yml"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.backend.yml", "build"
+}
+
+/**
+ * USER MANAGER FRONTEND
+ */
+
+task upUserManagerFrontend(type: Exec) {
+  group "docker-compose.user-manager.frontend"
+  description "Start all containers with docker-compose.user-manager.frontend.yml"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.frontend.yml", "up", "-d"
+}
+
+task logsUserManagerFrontend(type: Exec) {
+  group "docker-compose.user-manager.frontend"
+  description "Show log from mymessenger-user-manager-frontend container"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.frontend.yml", "logs", "mymessenger-user-manager-frontend"
+}
+
+task psUserManagerFrontend(type: Exec) {
+  group "docker-compose.user-manager.frontend"
+  description "Show containers list with docker-compose.user-manager.frontend.yml"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.frontend.yml", "ps"
+}
+
+task stopUserManagerFrontend(type: Exec) {
+  group "docker-compose.user-manager.frontend"
+  description "Stop all containers with docker-compose.user-manager.frontend.yml"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.frontend.yml", "stop"
+}
+
+task downUserManagerFrontend(type: Exec) {
+  group "docker-compose.user-manager.frontend"
+  description "Stop and delete all containers and volumes with docker-compose.user-manager.frontend.yml"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.frontend.yml", "down", "-v"
+}
+
+task buildUserManagerFrontend(type: Exec) {
+  group "docker-compose.user-manager.frontend"
+  description "Build all containers with docker-compose.user-manager.frontend.yml"
+  executable "docker-compose"
+  args "-f", "docker-compose.user-manager.frontend.yml", "build"
 }
