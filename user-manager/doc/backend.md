@@ -11,8 +11,8 @@ Before start service need run proxy `gradle upProxy` or `docker-compose -f docke
     - [Help](/doc/help.md)
     - [Development](/doc/development.md)
     - [Environment](/doc/environment.md)
-    - [User Manager](/doc/user-manager/common.md)
-        - [Frontend](/doc/user-manager/frontend.md)
+    - [User Manager](/user-manager/doc/common.md)
+        - [Frontend](/user-manager/doc/frontend.md)
         - **Backend**
 
 ---
