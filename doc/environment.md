@@ -12,9 +12,9 @@
     - [Help](/doc/help.md)
     - [Development](/doc/development.md)
     - **Environment**
-    - [User Manager](/doc/user-manager/common.md)
-        - [Frontend](/doc/user-manager/frontend.md)
-        - [Backend](/doc/user-manager/backend.md)
+    - [User Manager](/user-manager/doc/common.md)
+        - [Frontend](/user-manager/doc/frontend.md)
+        - [Backend](/user-manager/doc/backend.md)
 
 ---
 ### Before start project need:
@@ -36,7 +36,7 @@
 
 ---
 ### Services:
-- [User Manager](./user-manager/common.md)
+- [User Manager](/user-manager/doc/common.md)
 
 ---
 ### Technologies:

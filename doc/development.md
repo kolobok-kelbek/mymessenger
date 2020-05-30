@@ -6,9 +6,9 @@
     - [Help](/doc/help.md)
     - **Development**
     - [Environment](/doc/environment.md)
-    - [User Manager](/doc/user-manager/common.md)
-        - [Frontend](/doc/user-manager/frontend.md)
-        - [Backend](/doc/user-manager/backend.md)
+    - [User Manager](/user-manager/doc/common.md)
+        - [Frontend](/user-manager/doc/frontend.md)
+        - [Backend](/user-manager/doc/backend.md)
 
 ---
 # Intellij IDEA

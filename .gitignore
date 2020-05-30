@@ -163,4 +163,4 @@ nbdist/
 !.vscode/extensions.json
 
 ### Logs ###
-log/**/*.log
+/**/*.log
