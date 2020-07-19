@@ -1,4 +1,4 @@
-package unit.com.myprod.mymessenger.user.manager.service;
+package com.myprod.mymessenger.user.manager.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -13,7 +13,6 @@ import com.myprod.mymessenger.user.manager.repository.EmailRepository;
 import com.myprod.mymessenger.user.manager.repository.PhoneNumberRepository;
 import com.myprod.mymessenger.user.manager.repository.RoleRepository;
 import com.myprod.mymessenger.user.manager.repository.UserRepository;
-import com.myprod.mymessenger.user.manager.service.UserService;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;

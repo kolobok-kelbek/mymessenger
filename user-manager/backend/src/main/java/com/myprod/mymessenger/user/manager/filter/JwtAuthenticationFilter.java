@@ -15,12 +15,14 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.server.ResponseStatusException;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -50,7 +52,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     User user = userService.findUserByPhone(sign.getPhone());
 
-    if (passwordEncoder.matches(sign.getPassword(), user.getPassword())) {
+    if (null != user && passwordEncoder.matches(sign.getPassword(), user.getPassword())) {
 
       var authenticationToken =
           new UsernamePasswordAuthenticationToken(sign.getPhone(), sign.getPassword());
@@ -60,7 +62,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     AuthCookieUtil.clear(response, SecurityConstants.TOKEN_COOKIE);
 
-    return null;
+    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "invalid data for authentication");
   }
 
   @Override
