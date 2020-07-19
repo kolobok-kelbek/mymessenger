@@ -5,10 +5,11 @@ buildscript {
 }
 
 plugins {
+    id 'com.commercehub.cucumber-jvm' version '0.11'
     id 'org.springframework.boot' version '2.2.2.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'com.github.sherter.google-java-format' version '0.8'
-    id "org.flywaydb.flyway" version "6.3.2"
+    id 'org.flywaydb.flyway' version '6.3.2'
     id 'java'
 }
 
@@ -24,12 +25,22 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
 }
 
 repositories {
     mavenCentral()
 }
 
+sourceSets {
+  cucumber {
+    resources {
+      srcDir file('test/resources')
+    }
+  }
+}
 
 dependencies {
     // Spring
@@ -65,6 +76,8 @@ dependencies {
     // Jackson
     compile 'io.jsonwebtoken:jjwt-jackson:0.10.7'
 
+    compile "org.flywaydb:flyway-core:6.4.4"
+
     /** Tests */
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -73,6 +86,12 @@ dependencies {
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
+    // Cucuber
+    testImplementation 'io.cucumber:cucumber-core:6.1.0'
+    testImplementation 'io.cucumber:cucumber-java:6.1.0'
+    testImplementation 'io.cucumber:cucumber-junit:6.1.0'
+    testImplementation 'io.cucumber:cucumber-spring:6.1.0'
+
     // Faker
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
 
@@ -80,6 +99,13 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
 
+    testImplementation 'org.postgresql:postgresql:42.2.12'
+
+    // JWT
+    testImplementation 'io.jsonwebtoken:jjwt-api:0.10.7'
+    testImplementation 'io.jsonwebtoken:jjwt-impl:0.10.7'
+
+    testImplementation 'org.apache.httpcomponents:httpclient:4.5.12'
 }
 
 build.dependsOn(tasks.googleJavaFormat)
@@ -88,13 +114,26 @@ verifyGoogleJavaFormat.mustRunAfter(tasks.googleJavaFormat)
 
 test {
     useJUnitPlatform()
+    testLogging {
+      events 'passed', 'skipped', 'failed'
+    }
+}
+
+task cucumber() {
+  dependsOn assemble, compileTestJava
+  doLast {
+    javaexec {
+      main = 'io.cucumber.core.cli.Main'
+      classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+      args = ['--plugin', 'pretty', '--glue', 'com.myprod.mymessenger.user.manager.cucumber', 'src/test/resources/features']
+    }
+  }
 }
 
 flyway {
-    url = "jdbc:postgresql://mymessenger-user-manager-backend-db:5432/mymessenger?encoding=utf8&useUnicode=true&characterEncoding=UTF-8"
-    locations = ["filesystem:src/main/resources/db/migration"]
+    url = 'jdbc:postgresql://mymessenger-user-manager-backend-db:5432/mymessenger?encoding=utf8&useUnicode=true&characterEncoding=UTF-8'
+    locations = ['filesystem:src/main/resources/db/migration']
     baselineVersion = 1
-    user = "mymess"
-    password = "pass"
+    user = 'mymess'
+    password = 'pass'
 }
-
