@@ -82,20 +82,20 @@ VALUES ('eb8aefef-d441-4030-a3b1-ab99ea379b19', 3);
 DROP TABLE IF EXISTS "emails";
 CREATE TABLE "public"."emails"
 (
-    "uuid"      uuid NOT NULL,
-    "create_at"  timestamp NOT NULL,
+    "uuid"       uuid NOT NULL,
+    "created_at" timestamp NOT NULL,
     "email"      character varying(255),
-    "users_id"   uuid,
+    "user_id"    uuid,
     CONSTRAINT "emails_pkey" PRIMARY KEY ("uuid")
 ) WITH (oids = false);
 
 DROP TABLE IF EXISTS "phone_numbers";
 CREATE TABLE "public"."phone_numbers"
 (
-    "id"        uuid NOT NULL,
-    "create_at" timestamp NOT NULL,
-    "number"    character varying(255),
-    "user_id"   uuid,
+    "id"         uuid NOT NULL,
+    "created_at" timestamp NOT NULL,
+    "number"     character varying(255),
+    "user_id"    uuid,
     CONSTRAINT "phone_numbers_pkey" PRIMARY KEY ("id"),
     CONSTRAINT "uk_8bag6h0vp6x9fqp736a2nappk" UNIQUE ("number"),
     CONSTRAINT "fkg077extnnxwv904qjw2kwinpg" FOREIGN KEY (user_id) REFERENCES users (id) NOT DEFERRABLE
