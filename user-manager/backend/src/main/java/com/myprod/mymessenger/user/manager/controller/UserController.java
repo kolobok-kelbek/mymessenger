@@ -91,7 +91,7 @@ public class UserController {
 
   @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/users")
-  public ListView<UserView> getLimitUsers(@Valid @RequestParam PaginationQuery paginationQuery)
+  public ListView<UserView> getLimitUsers(@Valid PaginationQuery paginationQuery)
       throws ConvertException {
     Page<User> page = userService.findLimitUsers(paginationQuery);
 
