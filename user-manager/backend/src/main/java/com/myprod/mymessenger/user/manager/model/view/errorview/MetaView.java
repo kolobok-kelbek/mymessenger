@@ -5,5 +5,5 @@ import lombok.Data;
 
 @Data
 public class MetaView {
-  public Map<String, String> errors;
+  private Map<String, String> errors;
 }
