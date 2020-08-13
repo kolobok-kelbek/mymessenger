@@ -11,4 +11,4 @@ EXPOSE 3000
 
 ENTRYPOINT ["entrypoint.sh"]
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
