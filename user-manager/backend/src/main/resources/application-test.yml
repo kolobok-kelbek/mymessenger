@@ -8,7 +8,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://mymessenger-user-manager-backend-db:5432/mymessenger
+    url: jdbc:postgresql://mymessenger-user-manager-backend-db-test:5432/mymessenger
     username: mymess
     password: pass
 
@@ -43,8 +43,10 @@ server:
     max-threads: 5
 
 flyway:
-  url: jdbc:postgresql://mymessenger-user-manager-backend-db:5432/mymessenger?encoding=utf8&useUnicode=true&characterEncoding=UTF-8
-  locations: ["filesystem:src/main/resources/db/migration"]
+  url: jdbc:postgresql://mymessenger-user-manager-backend-db-test:5432/mymessenger?encoding=utf8&useUnicode=true&characterEncoding=UTF-8
+  locations: ["filesystem:src/main/resources/db/migration", "filesystem:src/test/resources/db/seeds/V1__default_users.sql"]
   baselineVersion: 1
   user: "mymess"
   password: "pass"
+  datasources:
+      clean-disabled: false

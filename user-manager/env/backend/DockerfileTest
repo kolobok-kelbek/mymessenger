@@ -1,0 +1,9 @@
+FROM gradle:6.3-jdk11
+
+WORKDIR /app
+
+RUN chmod 777 -R /app \
+  && mkdir -p /app/build \
+  && chmod 777 -R /app/build
+
+USER gradle

@@ -1,0 +1,18 @@
+INSERT INTO "users" ("id", "account_non_expired", "account_non_locked", "credentials_non_expired",
+                    "enabled", "first_name", "last_name", "password", "phone", "surname",
+                    "username", "updated_at", "created_at")
+VALUES ('eb8aefef-d441-4030-a3b1-ab99ea379b20', '0', '0', '0', '1', 'User1', 'User1',
+            '{bcrypt}$2a$10$.COQ3gwIQcFOcGrOkdlZh.pEUO5XvnbpQWLVnJk8q12U14ica/Qbq', '+77777777771',
+            NULL, NULL, NULL, '2020-05-24 18:19:42.247'),
+        ('eb8aefef-d441-4030-a3b1-ab99ea379b21', '0', '0', '0', '1', 'User2', 'User2',
+            '{bcrypt}$2a$10$.COQ3gwIQcFOcGrOkdlZh.pEUO5XvnbpQWLVnJk8q12U14ica/Qbq', '+77777777772',
+            NULL, NULL, NULL, '2020-05-24 18:19:42.247'),
+        ('eb8aefef-d441-4030-a3b1-ab99ea379b22', '0', '0', '0', '1', 'User3', 'User3',
+            '{bcrypt}$2a$10$.COQ3gwIQcFOcGrOkdlZh.pEUO5XvnbpQWLVnJk8q12U14ica/Qbq', '+77777777773',
+            NULL, NULL, NULL, '2020-05-24 18:19:42.247'),
+        ('eb8aefef-d441-4030-a3b1-ab99ea379b23', '0', '0', '0', '1', 'User4', 'User4',
+            '{bcrypt}$2a$10$.COQ3gwIQcFOcGrOkdlZh.pEUO5XvnbpQWLVnJk8q12U14ica/Qbq', '+77777777774',
+            NULL, NULL, NULL, '2020-05-24 18:19:42.247'),
+        ('eb8aefef-d441-4030-a3b1-ab99ea379b24', '0', '0', '0', '1', 'User5', 'User5',
+            '{bcrypt}$2a$10$.COQ3gwIQcFOcGrOkdlZh.pEUO5XvnbpQWLVnJk8q12U14ica/Qbq', '+77777777775',
+            NULL, NULL, NULL, '2020-05-24 18:19:42.247');

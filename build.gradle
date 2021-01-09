@@ -105,6 +105,82 @@ task buildUserManagerBackend(type: Exec) {
   args "-f", "user-manager/docker-compose.backend.yml", "build"
 }
 
+
+/**
+ *  USER MANAGER BACKEND TEST
+ */
+
+task buildUserManagerBackendTest(type: Exec) {
+  group "docker-compose.user-manager.backend.test"
+  description "Build all containers with docker-compose.backend.test.yml"
+  executable "docker-compose"
+  args "-f", "user-manager/docker-compose.backend.test.yml", "build"
+}
+
+task psUserManagerBackendTest(type: Exec) {
+  group "docker-compose.user-manager.backend.test"
+  description "Show containers list with docker-compose.backend.test.yml"
+  executable "docker-compose"
+  args "-f", "user-manager/docker-compose.backend.test.yml", "ps"
+}
+
+task upUserManagerBackendTest(type: Exec) {
+  group "docker-compose.user-manager.backend.test"
+  description "Start all containers with docker-compose.backend.test.yml"
+  executable "docker-compose"
+  args "-f", "user-manager/docker-compose.backend.test.yml", "up", "-d"
+}
+
+task stopUserManagerBackendTest(type: Exec) {
+  group "docker-compose.user-manager.backend.test"
+  description "Stop all containers with docker-compose.backend.test.yml"
+  executable "docker-compose"
+  args "-f", "user-manager/docker-compose.backend.test.yml", "stop"
+}
+
+task downUserManagerBackendTest(type: Exec) {
+  group "docker-compose.user-manager.backend.test"
+  description "Stop and delete all containers and volumes with docker-compose.backend.test.yml"
+  executable "docker-compose"
+  args "-f", "user-manager/docker-compose.backend.test.yml", "down", "-v"
+}
+
+task runUserManagerBackendTest(type: Exec) {
+  group "docker-compose.user-manager.backend.test"
+  description "Run unit and functional tests for User Manager's backend"
+  executable "docker-compose"
+  args "-f", "user-manager/docker-compose.backend.test.yml", "exec", "-T", "mymessenger-user-manager-backend-app-test", "gradle", "test", "cucumber"
+}
+
+task runUserManagerBackendTestUnit(type: Exec) {
+  group "docker-compose.user-manager.backend.test"
+  description "Run unit tests for User Manager's backend"
+  executable "docker-compose"
+  args "-f", "user-manager/docker-compose.backend.test.yml", "exec", "-T", "mymessenger-user-manager-backend-app-test", "gradle", "test"
+}
+
+task runUserManagerBackendTestFunc(type: Exec) {
+  group "docker-compose.user-manager.backend.test"
+  description "Run functional tests for User Manager's backend"
+  executable "docker-compose"
+  args "-f", "user-manager/docker-compose.backend.test.yml", "exec", "-T", "mymessenger-user-manager-backend-app-test", "gradle", "cucumber"
+}
+
+task logsUserManagerBackendTestApp(type: Exec) {
+  group "docker-compose.user-manager.backend.test"
+  description "Show log from mymessenger-user-manager-backend-app-test container"
+  executable "docker-compose"
+  args "-f", "user-manager/docker-compose.backend.test.yml", "logs", "mymessenger-user-manager-backend-app-test"
+}
+
+task logsUserManagerBackendTestDb(type: Exec) {
+  group "docker-compose.user-manager.backend.test"
+  description "Show log from mymessenger-user-manager-backend-db-test container"
+  executable "docker-compose"
+  args "-f", "user-manager/docker-compose.backend.test.yml", "logs", "mymessenger-user-manager-backend-db-test"
+}
+
+
 /**
  * USER MANAGER FRONTEND
  */
