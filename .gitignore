@@ -164,3 +164,6 @@ nbdist/
 
 ### Logs ###
 /**/*.log
+
+/.history
+/**/.project
