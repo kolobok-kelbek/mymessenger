@@ -6,35 +6,35 @@ task upProxy(type: Exec) {
   group "docker-compose.proxy"
   description "Start proxy container and main network"
   executable "docker-compose"
-  args "-f", "docker-compose.proxy.yml", "up", "-d"
+  args "-f", "env/docker-compose.proxy.yml", "up", "-d"
 }
 
 task logsProxy(type: Exec) {
   group "docker-compose.proxy"
   description "Show log from proxy container"
   executable "docker-compose"
-  args "-f", "docker-compose.proxy.yml", "logs", "mymessenger-common-proxy"
+  args "-f", "env/docker-compose.proxy.yml", "logs", "mm-proxy"
 }
 
 task psProxy(type: Exec) {
   group "docker-compose.proxy"
   description "Show containers list with docker-compose.proxy.yml"
   executable "docker-compose"
-  args "-f", "docker-compose.proxy.yml", "ps"
+  args "-f", "env/docker-compose.proxy.yml", "ps"
 }
 
 task stopProxy(type: Exec) {
   group "docker-compose.proxy"
   description "Stop proxy container and main network"
   executable "docker-compose"
-  args "-f", "docker-compose.proxy.yml", "stop"
+  args "-f", "env/docker-compose.proxy.yml", "stop"
 }
 
 task downProxy(type: Exec) {
   group "docker-compose.proxy"
   description "Stop and delete proxy container and main network"
   executable "docker-compose"
-  args "-f", "docker-compose.proxy.yml", "down", "-v"
+  args "-f", "env/docker-compose.proxy.yml", "down", "-v"
 }
 
 

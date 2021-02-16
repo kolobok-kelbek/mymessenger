@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 
 services:
 
@@ -20,4 +20,3 @@ services:
 networks:
   mm-network:
     name: mm-network
-
