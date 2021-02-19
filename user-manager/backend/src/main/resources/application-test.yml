@@ -8,9 +8,9 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://mymessenger-user-manager-backend-db-test:5432/mymessenger
-    username: mymess
-    password: pass
+    url: jdbc:postgresql://mm-um-backend-app-test:5432/mm
+    username: muser
+    password: muser
 
   # ===============================
   # JPA / HIBERNATE
@@ -31,6 +31,12 @@ spring:
           use_jdbc_metadata_defaults: false
   flyway:
     enabled: true
+    url: jdbc:postgresql://mm-um-backend-app-test:5432/mm?encoding=utf8&useUnicode=true&characterEncoding=UTF-8
+    locations: [ "filesystem:src/main/resources/db/migration", "filesystem:src/test/resources/db/seeds/V1__default_users.sql" ]
+    baselineVersion: 1
+    user: "muser"
+    password: "muser"
+    cleanDisabled: false
 
   # ===============================
   # SECURITY
@@ -41,12 +47,3 @@ spring:
 server:
   tomcat:
     max-threads: 5
-
-flyway:
-  url: jdbc:postgresql://mymessenger-user-manager-backend-db-test:5432/mymessenger?encoding=utf8&useUnicode=true&characterEncoding=UTF-8
-  locations: ["filesystem:src/main/resources/db/migration", "filesystem:src/test/resources/db/seeds/V1__default_users.sql"]
-  baselineVersion: 1
-  user: "mymess"
-  password: "pass"
-  datasources:
-      clean-disabled: false

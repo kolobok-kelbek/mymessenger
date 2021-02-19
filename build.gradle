@@ -1,228 +1,108 @@
 /**
- *  PROXY
+ * Common
  */
 
-task upProxy(type: Exec) {
-  group "docker-compose.proxy"
-  description "Start proxy container and main network"
-  executable "docker-compose"
-  args "-f", "env/docker-compose.proxy.yml", "up", "-d"
+static String toCamelCase(String text) {
+  return text.replaceAll("(_|-|\\.)([A-Za-z0-9])", { Object[] it -> it[2].toUpperCase() })
 }
 
-task logsProxy(type: Exec) {
-  group "docker-compose.proxy"
-  description "Show log from proxy container"
-  executable "docker-compose"
-  args "-f", "env/docker-compose.proxy.yml", "logs", "mm-proxy"
-}
+static String[] servicesToDcFilePaths(LinkedHashMap<String, String> services) {
+  def dockerComposeFilePaths = []
 
-task psProxy(type: Exec) {
-  group "docker-compose.proxy"
-  description "Show containers list with docker-compose.proxy.yml"
-  executable "docker-compose"
-  args "-f", "env/docker-compose.proxy.yml", "ps"
-}
+  services.each { name, filePath ->
+    dockerComposeFilePaths += ["-f", filePath]
+  }
 
-task stopProxy(type: Exec) {
-  group "docker-compose.proxy"
-  description "Stop proxy container and main network"
-  executable "docker-compose"
-  args "-f", "env/docker-compose.proxy.yml", "stop"
+  return dockerComposeFilePaths
 }
-
-task downProxy(type: Exec) {
-  group "docker-compose.proxy"
-  description "Stop and delete proxy container and main network"
-  executable "docker-compose"
-  args "-f", "env/docker-compose.proxy.yml", "down", "-v"
-}
-
 
 /**
- *  USER MANAGER BACKEND
+ *  Docker compose
  */
 
-task upUserManagerBackend(type: Exec) {
-  group "docker-compose.user-manager.backend"
-  description "Start all containers with docker-compose.backend.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.yml", "up", "-d"
+def services = [
+  "user-manager.back"     : "user-manager/docker-compose.backend.yml",
+  "user-manager.back.test": "user-manager/docker-compose.backend.test.yml",
+  "user-manager.front"    : "user-manager/docker-compose.frontend.yml",
+  "proxy"                 : "env/docker-compose.proxy.yml",
+]
+
+def commands = [
+  "up"  : [["up", "-d"], "Start containers"],
+  "ps"  : [["ps"], "Show containers list"],
+  "stop": [["stop"], "Stop containers"],
+  "down": [["down", "-v"], "Stop and delete containers and volumes"],
+]
+
+class DockerCompose extends Exec {
+  DockerCompose() {
+    group "docker-compose"
+    executable "docker-compose"
+    doFirst {
+      println "\nExecuded command - `" + commandLine.join(" ") + "`"
+    }
+  }
 }
 
-task logsUserManagerBackendDoc(type: Exec) {
-  group "docker-compose.user-manager.backend"
-  description "Show log from mymessenger-user-manager-backend-doc container"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.yml", "logs", "mymessenger-user-manager-backend-doc"
+class DockerComposeExec extends DockerCompose {
+  String[] dockerComposeFilePaths
+
+  DockerComposeExec() {
+    group "docker-compose"
+    executable "docker-compose"
+    doFirst {
+      println "\nExecuded command - `" + commandLine.join(" ") + "`"
+    }
+    if (project.hasProperty("cmd")) {
+      args new ArrayList<String>(dockerComposeFilePaths + project.getProperty("cmd").split(" ").flatten())
+    }
+
+    finalizedBy {
+      if (!project.hasProperty("cmd")) {
+        throw new IllegalArgumentException("Not found command for execute. You can try by example: `./gradlew $name up -d`")
+      }
+    }
+  }
+
+  void setDockerComposeFilePaths(String[] dockerComposeFilePaths) {
+    this.dockerComposeFilePaths = dockerComposeFilePaths
+  }
 }
 
-task logsUserManagerBackendApp(type: Exec) {
-  group "docker-compose.user-manager.backend"
-  description "Show log from mymessenger-user-manager-backend-app container"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.yml", "logs", "mymessenger-user-manager-backend-app"
+task dc(type: DockerComposeExec) {
+  group "docker-compose.all"
+  description "docker-compose unifying all docker-compose yml files"
+  dockerComposeFilePaths servicesToDcFilePaths(services)
 }
 
-task logsUserManagerBackendDb(type: Exec) {
-  group "docker-compose.user-manager.backend"
-  description "Show log from mymessenger-user-manager-backend-db container"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.yml", "logs", "mymessenger-user-manager-backend-db"
+commands.each { taskName, meta ->
+  def cmd = meta.get(0)
+  def descr = meta.get(1)
+
+  tasks.register(taskName, DockerCompose) {
+    group "docker-compose.all"
+    description descr
+    args (servicesToDcFilePaths(services) + cmd as ArrayList<? extends String>)
+  }
 }
 
-task logsUserManagerBackendDbAdmin(type: Exec) {
-  group "docker-compose.user-manager.backend"
-  description "Show log from mymessenger-user-manager-backend-db-admin container"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.yml", "logs", "mymessenger-user-manager-backend-db-admin"
-}
+services.each { serviceName, dockerComposeFilePath ->
+  def name = toCamelCase(serviceName)
+  def filePaths = servicesToDcFilePaths(services)
+  tasks.register(name, DockerComposeExec) {
+    group "docker-compose.$serviceName"
+    description "Docker-compose for $serviceName"
+    dockerComposeFilePaths filePaths
+  }
 
-task psUserManagerBackend(type: Exec) {
-  group "docker-compose.user-manager.backend"
-  description "Show containers list with docker-compose.backend.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.yml", "ps"
-}
+  commands.each { taskName, meta ->
+    def cmd = meta.get(0)
+    def descr = meta.get(1)
 
-task stopUserManagerBackend(type: Exec) {
-  group "docker-compose.user-manager.backend"
-  description "Stop all containers with docker-compose.backend.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.yml", "stop"
-}
-
-task downUserManagerBackend(type: Exec) {
-  group "docker-compose.user-manager.backend"
-  description "Stop and delete all containers and volumes with docker-compose.backend.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.yml", "down", "-v"
-}
-
-task buildUserManagerBackend(type: Exec) {
-  group "docker-compose.user-manager.backend"
-  description "Build all containers with docker-compose.backend.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.yml", "build"
-}
-
-
-/**
- *  USER MANAGER BACKEND TEST
- */
-
-task buildUserManagerBackendTest(type: Exec) {
-  group "docker-compose.user-manager.backend.test"
-  description "Build all containers with docker-compose.backend.test.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.test.yml", "build"
-}
-
-task psUserManagerBackendTest(type: Exec) {
-  group "docker-compose.user-manager.backend.test"
-  description "Show containers list with docker-compose.backend.test.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.test.yml", "ps"
-}
-
-task upUserManagerBackendTest(type: Exec) {
-  group "docker-compose.user-manager.backend.test"
-  description "Start all containers with docker-compose.backend.test.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.test.yml", "up", "-d"
-}
-
-task stopUserManagerBackendTest(type: Exec) {
-  group "docker-compose.user-manager.backend.test"
-  description "Stop all containers with docker-compose.backend.test.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.test.yml", "stop"
-}
-
-task downUserManagerBackendTest(type: Exec) {
-  group "docker-compose.user-manager.backend.test"
-  description "Stop and delete all containers and volumes with docker-compose.backend.test.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.test.yml", "down", "-v"
-}
-
-task runUserManagerBackendTest(type: Exec) {
-  group "docker-compose.user-manager.backend.test"
-  description "Run unit and functional tests for User Manager's backend"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.test.yml", "exec", "-T", "mymessenger-user-manager-backend-app-test", "gradle", "test", "cucumber"
-}
-
-task runUserManagerBackendTestUnit(type: Exec) {
-  group "docker-compose.user-manager.backend.test"
-  description "Run unit tests for User Manager's backend"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.test.yml", "exec", "-T", "mymessenger-user-manager-backend-app-test", "gradle", "test"
-}
-
-task runUserManagerBackendTestFunc(type: Exec) {
-  group "docker-compose.user-manager.backend.test"
-  description "Run functional tests for User Manager's backend"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.test.yml", "exec", "-T", "mymessenger-user-manager-backend-app-test", "gradle", "cucumber"
-}
-
-task logsUserManagerBackendTestApp(type: Exec) {
-  group "docker-compose.user-manager.backend.test"
-  description "Show log from mymessenger-user-manager-backend-app-test container"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.test.yml", "logs", "mymessenger-user-manager-backend-app-test"
-}
-
-task logsUserManagerBackendTestDb(type: Exec) {
-  group "docker-compose.user-manager.backend.test"
-  description "Show log from mymessenger-user-manager-backend-db-test container"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.backend.test.yml", "logs", "mymessenger-user-manager-backend-db-test"
-}
-
-
-/**
- * USER MANAGER FRONTEND
- */
-
-task upUserManagerFrontend(type: Exec) {
-  group "docker-compose.user-manager.frontend"
-  description "Start all containers with docker-compose.frontend.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.frontend.yml", "up", "-d"
-}
-
-task logsUserManagerFrontend(type: Exec) {
-  group "docker-compose.user-manager.frontend"
-  description "Show log from mymessenger-user-manager-frontend container"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.frontend.yml", "logs", "mymessenger-user-manager-frontend"
-}
-
-task psUserManagerFrontend(type: Exec) {
-  group "docker-compose.user-manager.frontend"
-  description "Show containers list with docker-compose.frontend.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.frontend.yml", "ps"
-}
-
-task stopUserManagerFrontend(type: Exec) {
-  group "docker-compose.user-manager.frontend"
-  description "Stop all containers with docker-compose.frontend.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.frontend.yml", "stop"
-}
-
-task downUserManagerFrontend(type: Exec) {
-  group "docker-compose.user-manager.frontend"
-  description "Stop and delete all containers and volumes with docker-compose.frontend.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.frontend.yml", "down", "-v"
-}
-
-task buildUserManagerFrontend(type: Exec) {
-  group "docker-compose.user-manager.frontend"
-  description "Build all containers with docker-compose.frontend.yml"
-  executable "docker-compose"
-  args "-f", "user-manager/docker-compose.frontend.yml", "build"
+    tasks.register(toCamelCase(serviceName + "_" + taskName), DockerCompose) {
+      group "docker-compose.$serviceName"
+      description descr
+      args new ArrayList<String>(["-f", dockerComposeFilePath] + cmd)
+    }
+  }
 }

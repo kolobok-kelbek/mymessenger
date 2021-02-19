@@ -2,13 +2,13 @@
 
 ### Menu
 
-- [Main](/README.md)
-    - [Help](/doc/help.md)
-    - [Development](/doc/development.md)
-    - [Environment](/doc/environment.md)
+- [Main](../../README.md)
+    - [Help](../../doc/help.md)
+    - [Development](../../doc/development.md)
+    - [Environment](../../doc/environment.md)
     - **User Manager**
-        - [Frontend](/user-manager/doc/frontend.md)
-        - [Backend](/user-manager/doc/backend.md)
+        - [Frontend](frontend.md)
+        - [Backend](backend.md)
 
 ---
 ### Tasks:
@@ -21,9 +21,9 @@
 
 ---
 ### Important links:
-- [Frontend](http://user-manager.mymessenger.local)
-- [Backend API](http://user-manager.api.mymessenger.local) (user-manager.api.mymessenger.local)
-- [Adminer](http://user-manager.adminer.mymessenger.local) - admin panel for database ([credentials](/doc/backend.md))
-- [Documentation](http://user-manager.doc.mymessenger.local)
-- [Swagger](http://user-manager.api.mymessenger.local)
+- [Frontend](http://um.mm.local)
+- [Backend API](http://um.api.mm.local) (um.api.mm.local)
+- [Adminer](http://um.adminer.mm.local) - admin panel for database ([credentials](backend.md))
+- [Documentation](http://UM.doc.mm.local)
+- [Swagger](http://um.api.mm.local)
 

@@ -1,64 +1,64 @@
-version: "3.7"
+version: "3.8"
 
 services:
 
-  mymessenger-user-manager-backend-doc:
-    image: nginx:1.18.0-alpine
-    container_name: mymessenger-user-manager-backend-doc
+  mm-um-backend-doc:
+    image: nginx:1.19.7-alpine
+    container_name: mm-um-backend-doc
     volumes:
       - ./backend:/app
       - ./env/nginx/nginx.doc.conf:/etc/nginx/conf.d/default.conf
     networks:
-      - mymessenger-network
+      - mm-network
     labels:
       - traefik.enable=true
-      - traefik.http.routers.user-manager-doc.rule=Host(`user-manager.doc.mymessenger.local`)
+      - traefik.http.routers.um-doc.rule=Host(`um.doc.mm.local`)
 
-  mymessenger-user-manager-backend-app:
+  mm-um-backend-app:
     build: ./env/backend
-    container_name: mymessenger-user-manager-backend-app
+    container_name: mm-um-backend-app
     command: gradle bootRun
     volumes:
       - ./backend:/app
     networks:
-      - mymessenger-network
+      - mm-network
     labels:
       - traefik.enable=true
-      - traefik.http.routers.user-manager-api.rule=Host(`user-manager.api.mymessenger.local`)
+      - traefik.http.routers.um-api.rule=Host(`um.api.mm.local`)
 
-  mymessenger-user-manager-backend-db:
-    image: postgres:12.2-alpine
-    container_name: mymessenger-user-manager-backend-db
+  mm-um-backend-db:
+    image: postgres:13.2-alpine
+    container_name: mm-um-backend-db
     environment:
-      POSTGRES_USER: mymess
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: mymessenger
+      POSTGRES_USER: muser
+      POSTGRES_PASSWORD: muser
+      POSTGRES_DB: mm
     volumes:
-      - mymessenger-user-manager-db-config-data:/var/lib/postgresql/data
+      - mm-um-db-config-data:/var/lib/postgresql/data
       - ./log/backend/postgres:/log/postgresql
       - ./env/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
     networks:
-      - mymessenger-network
+      - mm-network
     command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
 
-  mymessenger-user-manager-backend-db-admin:
-    image: adminer:4.7.7
-    container_name: mymessenger-user-manager-backend-db-admin
+  mm-um-backend-db-admin:
+    image: adminer:4.8.0
+    container_name: mm-um-backend-db-admin
     environment:
       ADMINER_DEFAULT_DB_DRIVER: pgsql
-      ADMINER_DEFAULT_DB_HOST: user-manager-db
-      ADMINER_DEFAULT_DB_NAME: mymessenger
+      ADMINER_DEFAULT_DB_HOST: um-db
+      ADMINER_DEFAULT_DB_NAME: mm
     networks:
-      - mymessenger-network
+      - mm-network
     labels:
       - traefik.enable=true
-      - traefik.http.routers.user-manager-adminer.rule=Host(`user-manager.adminer.mymessenger.local`)
+      - traefik.http.routers.um-adminer.rule=Host(`um.adminer.mm.local`)
 
 networks:
-  mymessenger-network:
-    name: mymessenger-network
+  mm-network:
+    name: mm-network
     external: true
 
 volumes:
-  mymessenger-user-manager-db-config-data:
+  mm-um-db-config-data:
 

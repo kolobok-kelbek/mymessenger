@@ -2,13 +2,13 @@
 
 ### Menu
 
-- [Main](/README.md)
-    - [Help](/doc/help.md)
+- [Main](../README.md)
+    - [Help](../doc/help.md)
     - **Development**
-    - [Environment](/doc/environment.md)
-    - [User Manager](/user-manager/doc/common.md)
-        - [Frontend](/user-manager/doc/frontend.md)
-        - [Backend](/user-manager/doc/backend.md)
+    - [Environment](../doc/environment.md)
+    - [User Manager](../user-manager/doc/common.md)
+        - [Frontend](../user-manager/doc/frontend.md)
+        - [Backend](../user-manager/doc/backend.md)
 
 ---
 # Intellij IDEA

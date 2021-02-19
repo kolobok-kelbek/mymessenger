@@ -8,23 +8,23 @@
 
 ### Menu
 
-- [Main](/README.md)
-    - [Help](/doc/help.md)
-    - [Development](/doc/development.md)
+- [Main](../README.md)
+    - [Help](../doc/help.md)
+    - [Development](../doc/development.md)
     - **Environment**
-    - [User Manager](/user-manager/doc/common.md)
-        - [Frontend](/user-manager/doc/frontend.md)
-        - [Backend](/user-manager/doc/backend.md)
+    - [User Manager](../user-manager/doc/common.md)
+        - [Frontend](../user-manager/doc/frontend.md)
+        - [Backend](../user-manager/doc/backend.md)
 
 ---
 ### Before start project need:
 
 - add domains to /etc/hosts
 ```
-127.0.0.1   user-manager.api.mymessenger.local
-127.0.0.1   user-manager.adminer.mymessenger.local
-127.0.0.1   user-manager.doc.mymessenger.local
-127.0.0.1   user-manager.mymessenger.local
+127.0.0.1   um.api.mm.local
+127.0.0.1   um.adminer.mm.local
+127.0.0.1   um.doc.mm.local
+127.0.0.1   um.mm.local
 ```
 - install dependencies:
     - [docker v19.03.9+](https://docs.docker.com/get-docker/)

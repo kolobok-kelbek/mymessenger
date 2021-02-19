@@ -2,24 +2,24 @@
 
 **NOTE**
 
-Before start service need run proxy `gradle upProxy` or `docker-compose -f docker-compose.proxy.yml up -d`
+Before start service need run proxy `gradle proxyUp` or `docker-compose -f env/docker-compose.proxy.yml up -d`
 
 ---
 ### Menu
 
-- [Main](/README.md)
-    - [Help](/doc/help.md)
-    - [Development](/doc/development.md)
-    - [Environment](/doc/environment.md)
-    - [User Manager](/user-manager/doc/common.md)
-        - [Frontend](/user-manager/doc/frontend.md)
+- [Main]../..(/README.md)
+    - [Help](../../doc/help.md)
+    - [Development](../../doc/development.md)
+    - [Environment](../../doc/environment.md)
+    - [User Manager](common.md)
+        - [Frontend](frontend.md)
         - **Backend**
 
 ---
 ### Start service:
 
-- Run `gradle buildUserManagerBackend` or `docker-compose -f docker-compose.user-manager.backend.yml build`
-- Run `gradle upUserManagerBackend` or `docker-compose -f docker-compose.user-manager.backend.yml up -d`
+- Run `gradle userManagerBack -Pcmd="build"` or `docker-compose -f user-manager/docker-compose.user-manager.backend.yml build`
+- Run `gradle userManagerUp` or `docker-compose -f user-manager/docker-compose.user-manager.backend.yml up -d`
 
 **NOTE**:
 After starting, wait about 5 minutes until the application builds and the migrations load.
@@ -30,14 +30,8 @@ After starting, wait about 5 minutes until the application builds and the migrat
 - PostgreSQL
 
 ---
-### Credentials for [Adminer](http://user-manager.adminer.mymessenger.local)
-- server - `mymessenger-user-manager-backend-db`
-- username - `mymess`
-- password - `pass`
-- database - `mymessenger`
-
----
-### Migrating the database
-execute Flyway to migrate our database:
-
-`gradle flywayMigrate -i`
+### Credentials for [Adminer](http://um.adminer.mm.local)
+- server - `mm-um-backend-db`
+- username - `muser`
+- password - `muser`
+- database - `mm`

@@ -1,21 +1,21 @@
-version: "3.7"
+version: "3.8"
 
 services:
 
-  mymessenger-user-manager-frontend:
+  mm-um-frontend:
     build: env/frontend
-    container_name: mymessenger-user-manager-frontend
+    container_name: mm-um-frontend
     tty: true
     user: 1000:1000
     volumes:
       - ./frontend:/app
     networks:
-      - mymessenger-network
+      - mm-network
     labels:
       - traefik.enable=true
-      - traefik.http.routers.user-manager-frontend.rule=Host(`user-manager.mymessenger.local`)
+      - traefik.http.routers.um-frontend.rule=Host(`um.mm.local`)
 
 networks:
-  mymessenger-network:
-    name: mymessenger-network
+  mm-network:
+    name: mm-network
     external: true

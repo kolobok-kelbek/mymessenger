@@ -2,13 +2,13 @@
 
 ### Menu
 
-- [Main](/README.md)
+- [Main](../README.md)
     - **Help**
-    - [Development](/doc/development.md)
-    - [Environment](/doc/environment.md)
-    - [User Manager](/user-manager/doc/common.md)
-        - [Frontend](/user-manager/doc/frontend.md)
-        - [Backend](/user-manager/doc/backend.md)
+    - [Development](../doc/development.md)
+    - [Environment](../doc/environment.md)
+    - [User Manager](../user-manager/doc/common.md)
+        - [Frontend](../user-manager/doc/frontend.md)
+        - [Backend](../user-manager/doc/backend.md)
 
 ---
 ### Important links:
@@ -25,13 +25,13 @@ For menu:
 ```markdown
 ### Menu
 
-- [Main](/README.md)
+- [Main](README.md)
     - **Help**
-    - [Development](/doc/development.md)
-    - [Environment](/doc/environment.md)
-    - [User Manager](/doc/user-manager/common.md)
-        - [Frontend](/doc/user-manager/frontend.md)
-        - [Backend](/doc/user-manager/backend.md)
+    - [Development](doc/development.md)
+    - [Environment](doc/environment.md)
+    - [User Manager](doc/user-manager/common.md)
+        - [Frontend](doc/user-manager/frontend.md)
+        - [Backend](doc/user-manager/backend.md)
 ```
 
 For split on subtitle using next construction:

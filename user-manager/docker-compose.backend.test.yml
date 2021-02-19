@@ -1,41 +1,41 @@
-version: "3.7"
+version: "3.8"
 
 services:
 
-  mymessenger-user-manager-backend-app-test:
+  mm-um-backend-app-test:
     build:
       context: ./env/backend
       dockerfile: DockerfileTest
-    container_name: mymessenger-user-manager-backend-app-test
+    container_name: mm-um-backend-app-test
     command: gradle build --continuous
     tty: true
     volumes:
       - ./backend/src:/app/src
       - ./backend/build.gradle:/app/build.gradle
       - ./backend/settings.gradle:/app/settings.gradle
-      - mymessenger-user-manager-backend-app-test-build:/app/build:Z
+      - mm-um-backend-app-test-build:/app/build:Z
     networks:
-      - mymessenger-user-manager-backend-test-network
+      - mm-um-backend-test-network
 
-  mymessenger-user-manager-backend-db-test:
-    image: postgres:12.2-alpine
-    container_name: mymessenger-user-manager-backend-db-test
+  mm-um-backend-db-test:
+    image: postgres:13.2-alpine
+    container_name: mm-um-backend-db-test
     environment:
-      POSTGRES_USER: mymess
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: mymessenger
+      POSTGRES_USER: muser
+      POSTGRES_PASSWORD: muser
+      POSTGRES_DB: mm
     volumes:
-      - mymessenger-user-manager-backend-db-config-data-test:/var/lib/postgresql/data
+      - mm-um-backend-db-config-data-test:/var/lib/postgresql/data
       - ./log/backend-test/postgres:/log/postgresql
       - ./env/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
     networks:
-      - mymessenger-user-manager-backend-test-network
+      - mm-um-backend-test-network
     command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
 
 networks:
-  mymessenger-user-manager-backend-test-network:
-    name: mymessenger-user-manager-backend-test-network
+  mm-um-backend-test-network:
+    name: mm-um-backend-test-network
 
 volumes:
-  mymessenger-user-manager-backend-db-config-data-test:
-  mymessenger-user-manager-backend-app-test-build:
+  mm-um-backend-db-config-data-test:
+  mm-um-backend-app-test-build:
